@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "openSX70_MEROEC_V7-9C_20200625-TCS3200")(type "KiCad")(uri "$(KIPRJMOD)/openSX70_MEROEC_V7-9C_20200625-TCS3200.pretty")(options "")(descr ""))
+)

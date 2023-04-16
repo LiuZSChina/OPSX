@@ -1,8 +1,8 @@
 {
   "board": {
-    "active_layer": 0,
+    "active_layer": 37,
     "active_layer_preset": "",
-    "auto_track_width": false,
+    "auto_track_width": true,
     "hidden_netclasses": [],
     "hidden_nets": [],
     "high_contrast_mode": 0,
@@ -34,7 +34,6 @@
       3,
       4,
       5,
-      8,
       9,
       10,
       11,
@@ -63,11 +62,11 @@
       36,
       40
     ],
-    "visible_layers": "e42fdff_ffffffff",
+    "visible_layers": "fff5fff_ffffffff",
     "zone_display_mode": 0
   },
   "meta": {
-    "filename": "opsx_x.kicad_prl",
+    "filename": "openSX70_SONAR-FBW_8-9-3-8-S4-TCS3200-NO-THERMAL-20200509.kicad_prl",
     "version": 3
   },
   "project": {

@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "openSX70_SONAR-FBW_8-9-3-8-S4-TCS3200-NO-THERMAL-20200509")(type "KiCad")(uri "$(KIPRJMOD)/openSX70_SONAR-FBW_8-9-3-8-S4-TCS3200-NO-THERMAL-20200509.pretty")(options "")(descr ""))
+)

@@ -641,7 +641,7 @@
       "idf": "",
       "netlist": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "opsx_x.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""

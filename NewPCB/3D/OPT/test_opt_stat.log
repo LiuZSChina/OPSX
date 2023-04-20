@@ -1,0 +1,308 @@
+MSC Nastran V2020 (AMD Windows 10 Pro 6.2 9200) Control File: 
+----------------------------------------------------------------- 
+$ sysfield=SCR*(RAW=YES,BUFFIO=YES,wnum=16,wsize=16mb) $(e:/msc/nastran/conf/nast20200.rcf[2])
+$ sysfield=DBALL(RAW=YES,BUFFIO=YES,wnum=16,wsize=16mb) $(e:/msc/nastran/conf/nast20200.rcf[3])
+Nastran BUFFSIZE=32769 $(e:/msc/nastran/conf/nast20200.rcf[6])
+JID='D:\Develope\OPSX\NewPCB\3D\OPT\test_opt_stat.bdf'
+OUT='./test_opt_stat'
+MEM=4062MB      $ 
+MACH='AMD'
+OPER='Windows 10 Pro'
+OSV='6.2 9200'
+MODEL='AMD Ryzen 5 2600X Six-Core Pro (JimPC)'
+NPROC='12'
+CONFIG=15
+NPROC=12
+symbol=DELDIR='e:/msc/nastran/msc20200/nast/del' $(program default)
+symbol=DEMODIR='e:/msc/nastran/msc20200/nast/demo' $(program default)
+symbol=LM_NO_SNMP=1 $(e:/msc/nastran/conf/nast20200.rcf[10])
+symbol=MKL_INTERFACE_LAYER=ILP64 $(e:/msc/nastran/conf/nast20200.rcf[1])
+symbol=SSSALTERDIR='e:/msc/nastran/msc20200/nast/sssalter' $(program default)
+symbol=TPLDIR='e:/msc/nastran/msc20200/nast/tpl' $(program default)
+SDIR='c:/scratch/test_opt_stat.T18884_18'
+DBS='c:/scratch/test_opt_stat.T18884_18'
+SCR='yes'
+SMEM=100
+BPOOL=1015.6MB
+DMPMEM=estimate
+NEWDEL='e:/msc/nastran/msc20200/win64i8/sss'
+DEL='MSCDEF'
+DML=MSCDEF
+SDL=MSCDEF
+AUTH='27500@JimPC'
+AUTHQUE=20
+MSGCAT='e:/msc/nastran/msc20200/win64i8/analysis.msg'
+MSGDEST='f06'
+NEWS='e:/msc/nastran/msc20200/nast/news.txt'
+----------------------------------------------------------------- 
+MSC_ISHELLPATH=E:\Msc\Nastran\msc20200\actran\win64\Actran_2021.b.130490\bin;E:\Msc\Nastran\msc20200\nast; 
+MSC_JIDPATH= 
+PATH=e:\msc\nastran\msc20200\win64i8;e:\msc\nastran\msc20200\win64i8\nCode\bin;e:\msc\nastran\msc20200\win64i8\nvidia;e:\msc\nastran\msc20200\win64i8\lib;e:\msc\nastran\msc20200\win64i8;E:\Msc\Patran\bin;E:\Msc\Patran\bin\exe;E:\Msc\Patran\Perl_msc\bin;E:\Msc\Patran\scasystem_files;E:\Msc\Patran\bin;E:\Msc\Patran\bin\exe;E:\Msc\Patran\Perl_msc\bin;E:\Msc\Patran\scasystem_files;E:\Msc\Patran\bin;F:\Intel\mpi\latest\bin\;F:\Intel\mpi\latest\bin\release\;F:\Intel\mpi\latest\libfabric\bin\;F:\Intel\mpi\latest\libfabric\bin\utils\;F:\Intel\tbb\latest\redist\intel64\vc_mt\;F:\Intel\tbb\latest\redist\ia32\vc_mt\;F:\Intel\compiler\latest\windows\redist\intel64_win\compiler;F:\Intel\compiler\latest\windows\redist\ia32_win\compiler;C:\Program Files (x86)\Intax\zf.chksdk.winclient\plugins\cpp.chksdk.logic;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.6\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.6\libnvvp;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\Nsight Compute 2022.1.1\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Bandizip\;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\dotnet\;C:\Program Files\Git\cmd;C:\mingw64\bin;C:\Program Files\Calibre2\;F:\matlab\runtime\win64;F:\matlab\bin;C:\Program Files\PowerShell\7\;C:\Users\LiuZS\anaconda3;C:\Users\LiuZS\anaconda3\Library\mingw-w64\bin;C:\Users\LiuZS\anaconda3\Library\usr\bin;C:\Users\LiuZS\anaconda3\Library\bin;C:\Users\LiuZS\anaconda3\Scripts;C:\Users\LiuZS\AppData\Local\Microsoft\WindowsApps;C:\Users\LiuZS\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\LiuZS\AppData\Local\GitHubDesktop\bin;; 
+SCA_SERVICE_CATALOG=e:\msc\nastran\msc20200\res\SCAServiceCatalog.xml 
+SCA_RESOURCE_DIR=e:\msc\nastran\msc20200\res 
+Cmd Line:    E:\Msc\Nastran\msc20200\win64i8\nastran.exe TEST_OPT_stat.bdf bat=no 
+Current Dir: D:\Develope\OPSX\NewPCB\3D\OPT 
+Time Cmd:    e:\msc\nastran\msc20200\win64i8\msctime 
+Executable:  e:\msc\nastran\msc20200\win64i8\analysis.exe 
+Arch= Kywd:  [Not specified]  
+MSC_MSG:     stderr  
+FPE:         yes  
+----------------------------------------------------------------- 
+Current resource limits:
+ Physical memory:                     8125 MB
+ Physical memory available:           3376 MB
+ Paging file size:                   18877 MB
+ Paging file size available:          9248 MB
+ Virtual memory:                 134217727 MB
+ Virtual memory available:       134213506 MB
+----------------------------------------------------------------- 
+System configuration:
+ Hostname:         JimPC
+ Architecture:     win64i8
+ Platform:         AMD Windows 10 Pro 6.2 9200 (Windows Compute Cluster)
+ Model:            AMD Ryzen 5 2600X Six-Core Pro
+ Clock freq.:      18100 MHz
+ Number of CPUs:   12
+ Executable:       standard
+ Raw model ID:     15
+ Config number:    15
+ Physical memory:  8125 MB
+ Virtual memory:   18877 MB
+ Numeric format:   64-bit little-endian IEEE.
+ Bytes per word:   8
+ Disk block size:  512 bytes (64 words)
+ Remote shell cmd: "e:/msc/nastran/msc20200/win64i8/mscrmtcmd.exe" (Windows non-CCS nodes, UNIX)
+                   <ccs_cmd> (Windows CCS nodes)
+----------------------------------------------------------------- 
+MSC Nastran started  Thu Apr 20 11:50:20 ?D1迆㊣那℅?那㊣?? 2023 
+ 11:50:24  Beginning Analysis
+SCA Kernel 24.7.714370 successfully initialized
+BLAS/LAPACK .dll "e:\msc\nastran\msc20200\win64i8\libimalloc.dll" has been loaded.
+BLAS/LAPACK .dll "e:\msc\nastran\msc20200\win64i8\mkl_core.dll" has been loaded.
+BLAS/LAPACK .dll "e:\msc\nastran\msc20200\win64i8\mkl_intel_thread.dll" has been loaded.
+BLAS/LAPACK .dll "e:\msc\nastran\msc20200\win64i8\mkl_rt.dll" has been loaded.
+BLAS/LAPACK .dll "e:\msc\nastran\msc20200\win64i8\MSCblas.dll" has been loaded.
+
+ 11:50:24  MSC Authorization Information - System Attributes (1004, 0)
+ 11:50:24  -----------------------------------------------------------
+  Date:          Thu Apr 20 11:50:24 2023
+  MSC Id:        00e04c4da40d (ethernet) (Intel)
+  Hostname:      JimPC (user LiuZS, display JimPC)
+  License files: 27500@JimPC
+  CEID:          4C4DA40D-494E8CF6
+  User:          LiuZS
+  Display:       JimPC
+  LAPI Version:  LAPI 10.6.4 (CL 714361) (FLEXlm 11.16.3.0)
+
+  * * * * * * * * * * * * * * * * * * * *
+  * * * * * * * * * * * * * * * * * * * *
+  * *                                 * *
+  * *   MSC Customer Entitlement ID   * *
+  * *        4C4DA40D-494E8CF6        * *
+  * *                                 * *
+  * * * * * * * * * * * * * * * * * * * *
+  * * * * * * * * * * * * * * * * * * * *
+
+ 11:50:24  MSC Authorization Information - Checkout Successful (1016, 0)
+ 11:50:24  -------------------------------------------------------------
+ 11:50:24  Acquired 1 license for MSC Nastran from license server on host JimPC
+
+
+Beginning bulk data processing using the IFPStar component.
+For more information on IFPStar, please see KB article KB8019200
+on our support pages, at http://simcompanion.mscsoftware.com.
+
+ 11:50:25  91573 records read from JID file "D:\Develope\OPSX\NewPCB\3D\OPT\test_opt_stat.bdf"
+
+Processing of bulk data entries is complete.
+
+ 11:50:25  Analysis started.
+ 11:50:25  Geometry access/verification to CAD part initiated (if needed).
+ 11:50:25  Geometry access/verification to CAD part successfully completed (if needed).
+ 11:50:39  Design cycle 1 started.
+ 11:50:39  Finite element model generation started.
+ 11:50:41  Finite element model generated 163824 degrees of freedom.
+ 11:50:41  Finite element model generation successfully completed.
+ 11:50:41  Application of Loads and Boundary Conditions to the finite element model started.
+ 11:50:41  Application of Loads and Boundary Conditions to the finite element model successfully completed.
+ 11:50:56  Solution of the system equations for linear statics started.
+ 11:50:56  Solution of the system equations for linear statics successfully completed.
+
+ 11:51:36  MSC Authorization Information - Checkout Successful (1016, 0)
+ 11:51:36  -------------------------------------------------------------
+ 11:51:36  Acquired 1 license for MSC Nastran Optimization from license server on host JimPC
+
+
+******************************************************************************
+This program contains Ipopt, a library for large-scale nonlinear optimization.
+ Ipopt is released as open source code under the Eclipse Public License (EPL).
+         For more information visit http://projects.coin-or.org/Ipopt
+******************************************************************************
+
+ 11:52:06  Design cycle 2 started.
+ 11:52:07  Finite element model generation started.
+ 11:52:09  Finite element model generated 163824 degrees of freedom.
+ 11:52:09  Finite element model generation successfully completed.
+ 11:52:09  Application of Loads and Boundary Conditions to the finite element model started.
+ 11:52:09  Application of Loads and Boundary Conditions to the finite element model successfully completed.
+ 11:52:16  Solution of the system equations for linear statics started.
+ 11:52:16  Solution of the system equations for linear statics successfully completed.
+ 11:53:06  Design cycle 3 started.
+ 11:53:06  Finite element model generation started.
+ 11:53:08  Finite element model generated 163824 degrees of freedom.
+ 11:53:08  Finite element model generation successfully completed.
+ 11:53:08  Application of Loads and Boundary Conditions to the finite element model started.
+ 11:53:08  Application of Loads and Boundary Conditions to the finite element model successfully completed.
+ 11:53:16  Solution of the system equations for linear statics started.
+ 11:53:16  Solution of the system equations for linear statics successfully completed.
+ 11:53:41  Design cycle 4 started.
+ 11:53:41  Finite element model generation started.
+ 11:53:42  Finite element model generated 163824 degrees of freedom.
+ 11:53:42  Finite element model generation successfully completed.
+ 11:53:42  Application of Loads and Boundary Conditions to the finite element model started.
+ 11:53:42  Application of Loads and Boundary Conditions to the finite element model successfully completed.
+ 11:53:49  Solution of the system equations for linear statics started.
+ 11:53:49  Solution of the system equations for linear statics successfully completed.
+ 11:54:16  Design cycle 5 started.
+ 11:54:16  Finite element model generation started.
+ 11:54:17  Finite element model generated 163824 degrees of freedom.
+ 11:54:17  Finite element model generation successfully completed.
+ 11:54:17  Application of Loads and Boundary Conditions to the finite element model started.
+ 11:54:17  Application of Loads and Boundary Conditions to the finite element model successfully completed.
+ 11:54:24  Solution of the system equations for linear statics started.
+ 11:54:24  Solution of the system equations for linear statics successfully completed.
+ 11:54:54  Design cycle 6 started.
+ 11:54:54  Finite element model generation started.
+ 11:54:55  Finite element model generated 163824 degrees of freedom.
+ 11:54:55  Finite element model generation successfully completed.
+ 11:54:55  Application of Loads and Boundary Conditions to the finite element model started.
+ 11:54:55  Application of Loads and Boundary Conditions to the finite element model successfully completed.
+ 11:55:02  Solution of the system equations for linear statics started.
+ 11:55:02  Solution of the system equations for linear statics successfully completed.
+ 11:55:21  Design cycle 7 started.
+ 11:55:21  Finite element model generation started.
+ 11:55:22  Finite element model generated 163824 degrees of freedom.
+ 11:55:22  Finite element model generation successfully completed.
+ 11:55:22  Application of Loads and Boundary Conditions to the finite element model started.
+ 11:55:22  Application of Loads and Boundary Conditions to the finite element model successfully completed.
+ 11:55:29  Solution of the system equations for linear statics started.
+ 11:55:29  Solution of the system equations for linear statics successfully completed.
+ 11:55:44  Design cycle 8 started.
+ 11:55:45  Finite element model generation started.
+ 11:55:46  Finite element model generated 163824 degrees of freedom.
+ 11:55:46  Finite element model generation successfully completed.
+ 11:55:46  Application of Loads and Boundary Conditions to the finite element model started.
+ 11:55:46  Application of Loads and Boundary Conditions to the finite element model successfully completed.
+ 11:55:52  Solution of the system equations for linear statics started.
+ 11:55:52  Solution of the system equations for linear statics successfully completed.
+ 11:56:20  Design cycle 9 started.
+ 11:56:20  Finite element model generation started.
+ 11:56:21  Finite element model generated 163824 degrees of freedom.
+ 11:56:21  Finite element model generation successfully completed.
+ 11:56:21  Application of Loads and Boundary Conditions to the finite element model started.
+ 11:56:21  Application of Loads and Boundary Conditions to the finite element model successfully completed.
+ 11:56:28  Solution of the system equations for linear statics started.
+ 11:56:28  Solution of the system equations for linear statics successfully completed.
+ 11:56:43  Design cycle 10 started.
+ 11:56:43  Finite element model generation started.
+ 11:56:44  Finite element model generated 163824 degrees of freedom.
+ 11:56:44  Finite element model generation successfully completed.
+ 11:56:44  Application of Loads and Boundary Conditions to the finite element model started.
+ 11:56:44  Application of Loads and Boundary Conditions to the finite element model successfully completed.
+ 11:56:51  Solution of the system equations for linear statics started.
+ 11:56:51  Solution of the system equations for linear statics successfully completed.
+ 11:57:09  Design cycle 11 started.
+ 11:57:09  Finite element model generation started.
+ 11:57:10  Finite element model generated 163824 degrees of freedom.
+ 11:57:10  Finite element model generation successfully completed.
+ 11:57:10  Application of Loads and Boundary Conditions to the finite element model started.
+ 11:57:10  Application of Loads and Boundary Conditions to the finite element model successfully completed.
+ 11:57:17  Solution of the system equations for linear statics started.
+ 11:57:17  Solution of the system equations for linear statics successfully completed.
+ 11:57:35  Design cycle 12 started.
+ 11:57:35  Finite element model generation started.
+ 11:57:36  Finite element model generated 163824 degrees of freedom.
+ 11:57:36  Finite element model generation successfully completed.
+ 11:57:36  Application of Loads and Boundary Conditions to the finite element model started.
+ 11:57:36  Application of Loads and Boundary Conditions to the finite element model successfully completed.
+ 11:57:43  Solution of the system equations for linear statics started.
+ 11:57:43  Solution of the system equations for linear statics successfully completed.
+ 11:57:58  Design cycle 13 started.
+ 11:57:58  Finite element model generation started.
+ 11:57:59  Finite element model generated 163824 degrees of freedom.
+ 11:57:59  Finite element model generation successfully completed.
+ 11:57:59  Application of Loads and Boundary Conditions to the finite element model started.
+ 11:57:59  Application of Loads and Boundary Conditions to the finite element model successfully completed.
+ 11:58:06  Solution of the system equations for linear statics started.
+ 11:58:06  Solution of the system equations for linear statics successfully completed.
+ 11:58:21  Design cycle 14 started.
+ 11:58:22  Finite element model generation started.
+ 11:58:23  Finite element model generated 163824 degrees of freedom.
+ 11:58:23  Finite element model generation successfully completed.
+ 11:58:23  Application of Loads and Boundary Conditions to the finite element model started.
+ 11:58:23  Application of Loads and Boundary Conditions to the finite element model successfully completed.
+ 11:58:29  Solution of the system equations for linear statics started.
+ 11:58:29  Solution of the system equations for linear statics successfully completed.
+ 11:58:46  Design cycle 15 started.
+ 11:58:46  Finite element model generation started.
+ 11:58:47  Finite element model generated 163824 degrees of freedom.
+ 11:58:47  Finite element model generation successfully completed.
+ 11:58:47  Application of Loads and Boundary Conditions to the finite element model started.
+ 11:58:47  Application of Loads and Boundary Conditions to the finite element model successfully completed.
+ 11:58:55  Solution of the system equations for linear statics started.
+ 11:58:55  Solution of the system equations for linear statics successfully completed.
+ 11:59:10  Design cycle 16 started.
+ 11:59:10  Finite element model generation started.
+ 11:59:11  Finite element model generated 163824 degrees of freedom.
+ 11:59:11  Finite element model generation successfully completed.
+ 11:59:11  Application of Loads and Boundary Conditions to the finite element model started.
+ 11:59:11  Application of Loads and Boundary Conditions to the finite element model successfully completed.
+ 11:59:18  Solution of the system equations for linear statics started.
+ 11:59:18  Solution of the system equations for linear statics successfully completed.
+ 11:59:37  Design cycle 17 started.
+ 11:59:37  Finite element model generation started.
+ 11:59:38  Finite element model generated 163824 degrees of freedom.
+ 11:59:38  Finite element model generation successfully completed.
+ 11:59:38  Application of Loads and Boundary Conditions to the finite element model started.
+ 11:59:38  Application of Loads and Boundary Conditions to the finite element model successfully completed.
+ 11:59:44  Solution of the system equations for linear statics started.
+ 11:59:45  Solution of the system equations for linear statics successfully completed.
+ 11:59:45  Finite element model generation started.
+ 11:59:46  Finite element model generated 163824 degrees of freedom.
+ 11:59:46  Finite element model generation successfully completed.
+ 11:59:52  Optimization completed.
+ 11:59:52  23 records read from JID file "D:\Develope\OPSX\NewPCB\3D\OPT\test_opt_stat.bdf"
+ 11:59:52  NSEXIT: EXIT(0)
+ 11:59:52  Analysis complete  0
+Real:      572.016 seconds ( 0:09:32.016)
+User:      277.218 seconds ( 0:04:37.218)
+Sys:        29.828 seconds ( 0:00:29.828)
+ ==================================================
+ OS:                           6.2
+ OEM ID:                       9
+ Model:                        AMD Ryzen 5 2600X Six-Core Processor  
+ Number of processors:         12
+ Page size:                    4096
+ Processor type:               8664
+ Minimum application address:  10000
+ Maximum application address:  fffeffff
+ Active processor mask:        4095
+ Nsocket:                      1
+ Ncore:                        6  ( 1 X 6 )
+ HyperThreading:               On
+ Ram:                          8125 Mb
+ ==================================================
+ Time Summary                 CPU       Wall   ( Time in Seconds )
+ Stiffness Generation        11.4         18 
+ Solver                     108.5        120 
+ Miscellaneous              186.5        430 
+ -------------------------------------------
+ Total:                     306.4        568 
+ ==================================================
+ Consider using SOLVE=AUTO if you have not.
+ Consider using SMP = 12 ( The number of cores per socket )
+ =====================================================
+ Detailed performance information can be found in the 
+ "MSC Nastran High Performance Computing User's Guide"
+ =====================================================
+MSC Nastran finished Thu Apr 20 11:59:55 ?D1迆㊣那℅?那㊣?? 2023 

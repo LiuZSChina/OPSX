@@ -6,7 +6,7 @@ Red_Button_Pressed = 1
 if_focused = False
 de_bounce_time = 1
 de_bounce_count = 10
-adc_de_bonuce_count = 50
+adc_de_bonuce_count = 70
 # Code Start at "#End of Config"
 
 # Config Output Pins <See Pins.xls>
@@ -15,13 +15,12 @@ apture_pin = 17
 motor_pin = 5
 LED_Y_PIN = 12
 LED_B_PIN = 13
+S1F_FBW_PIN = 22
 # End Config Output
 
 # Config Input Pins <See Pins.xls>
 S1F_PIN = 2 # Sw 1 Focus
 S1T_PIN = 1 # Sw 1 Take Photo
-S1F_FBW_PIN = 22
-S3_PIN = 7
 S3_PIN = 7
 S5_PIN = 6
 ADC_STAGE1_PIN = 27
@@ -67,7 +66,7 @@ def camera_init():
     
     motor = Pin(motor_pin,Pin.OUT, value=0)
     LED_Y = Pin(LED_Y_PIN, Pin.OUT,value = 1)
-    LED_B = Pin(LED_B_PIN, Pin.OUT,value = 1)	
+    LED_B = Pin(LED_B_PIN, Pin.OUT,value = 1)
     S1F_FBW = Pin(S1F_FBW_PIN, Pin.OUT,value = 0)
     
     s3 = Pin(S3_PIN,Pin.IN,Pin.PULL_UP)
@@ -75,8 +74,8 @@ def camera_init():
     s1f = Pin(S1F_PIN,Pin.IN)
     s1t = Pin(S1T_PIN,Pin.IN)
     
-    ADC0 = ADC(Pin(ADC_STAGE1_PIN))  # 通过GPIO27初始化ADC
-    ADC1 = ADC(Pin(ADC_STAGE2_PIN))  # 通过GPIO28初始化ADC
+    ADC0 = ADC(Pin(ADC_STAGE1_PIN))  # 初始化ADC
+    ADC1 = ADC(Pin(ADC_STAGE2_PIN))  # 初始化ADC
     
     f = open('./dat/iso.txt')
     iso = f.readline()
@@ -95,9 +94,9 @@ def close_led():
     
 def led_iso():
     if iso == '600':
-        LED_B.value(0)
-    else:
         LED_Y.value(0)
+    else:
+        LED_B.value(0)
 
 def de_bounce_read_pins(pin_list):
     global de_bounce_time,de_bounce_count
@@ -122,13 +121,16 @@ def meter():
     read_voltage0 = 0
     read_voltage1 = 0
     for i in range(adc_de_bonuce_count):
-        read_voltage0 += ADC0.read_u16()*3300/65535   # 读取ADC通道0的数值并根据ADC电压计算公式得到GPIO26引脚上的电压
-        read_voltage1 += ADC1.read_u16()*3300/65535   # 读取ADC通道0的数值并根据ADC电压计算公式得到GPIO26引脚上的电压
+        read_voltage0 += ADC0.read_u16()*3000/65535   # 读取ADC通道0的数值并根据ADC电压计算公式得到GPIO26引脚上的电压
+        read_voltage1 += ADC1.read_u16()*3000/65535   # 读取ADC通道0的数值并根据ADC电压计算公式得到GPIO26引脚上的电压
         time.sleep_ms(1)
     read_voltage0 = read_voltage0/adc_de_bonuce_count
     read_voltage1 = read_voltage1/adc_de_bonuce_count
     if _CAMERA_DBG_:
         print("1st stage voltage = {0:.2f}mV \t\t  2nd stage voltage = {1:.2f}mV \t\t".format(read_voltage0, read_voltage1))
+    
+        
+    
 
 def shut(Shutter_Delay, f="1"):
     if _CAMERA_DBG_:
@@ -244,4 +246,7 @@ if __name__ == "__main__":
     camera_init()
     #test_cam()
     #shut(1000)
-    test_cam1()
+    #test_cam1()
+    while True:
+        meter()
+        time.sleep_ms(1000)

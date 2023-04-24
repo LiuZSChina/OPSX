@@ -219,13 +219,13 @@ def test_cam1():
         foc = dbpv[0]
         tak = dbpv[1]
         if foc == Red_Button_Pressed and if_focused == False:
-            S1F_FBW.value(1);
+            #S1F_FBW.value(1);
             if_focused = True
             print("Focusing!")
             if _CAMERA_DBG_:
                 print(dbpv)
         if foc != Red_Button_Pressed and if_focused == True:
-            S1F_FBW.value(0);
+            #S1F_FBW.value(0);
             if_focused = False
             print("Stop Focus")
             if _CAMERA_DBG_:
@@ -246,7 +246,7 @@ if __name__ == "__main__":
     camera_init()
     #test_cam()
     #shut(1000)
-    #test_cam1()
+    test_cam1()
     while True:
         meter()
         time.sleep_ms(1000)

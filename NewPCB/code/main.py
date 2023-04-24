@@ -54,7 +54,7 @@ sht1000 = 18
 
 # Inital camera
 def camera_init():
-    global motor,shutter,apture,LED_Y,LED_B,s3,s5,s1t,s1f,S1F_FBW
+    global motor,shutter,apture,LED_Y,LED_B,s3,s5,s1t,s1f,S1F_FBW,iso
     shutter = PWM(Pin(shutter_pin))
     shutter.freq(20000)
     shutter.duty_u16(0)
@@ -64,7 +64,7 @@ def camera_init():
     
     motor = Pin(motor_pin,Pin.OUT, value=0)
     LED_Y = Pin(LED_Y_PIN, Pin.OUT,value = 1)
-    LED_B = Pin(LED_B_PIN, Pin.OUT,value = 0)	
+    LED_B = Pin(LED_B_PIN, Pin.OUT,value = 1)	
     S1F_FBW = Pin(S1F_FBW_PIN, Pin.OUT,value = 0)
     
     s3 = Pin(S3_PIN,Pin.IN,Pin.PULL_UP)
@@ -78,6 +78,20 @@ def camera_init():
     f.close()
     if _CAMERA_DBG_:
         print("ISO at %s!"%iso)
+    if iso == '600':
+        LED_Y.value(0)
+    else:
+        LED_B.value(0)
+
+def close_led():
+    LED_Y.value(1)
+    LED_B.value(1)
+    
+def led_iso():
+    if iso == '600':
+        LED_B.value(0)
+    else:
+        LED_Y.value(0)
 
 def de_bounce_read_pins(pin_list):
     global de_bounce_time,de_bounce_count
@@ -99,8 +113,6 @@ def apture_disengage():
     apture.duty_u16(0)
 
 def shut(Shutter_Delay, f="1"):
-    LED_Y.value(1)
-    LED_B.value(1)
     if _CAMERA_DBG_:
         print("Taking Picture")
     if _CAMERA_DBG_:
@@ -199,11 +211,15 @@ def test_cam1():
             if _CAMERA_DBG_:
                 print(dbpv)
         if tak == Red_Button_Pressed:
+            LED_Y.value(1)
+            LED_B.value(1)
             shut(1000);
             print("Taken!")
+            led_iso()
+            
             if _CAMERA_DBG_:
                 print(dbpv)
-            return
+            #return
     
 if __name__ == "__main__":
     camera_init()

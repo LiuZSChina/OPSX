@@ -1,4 +1,4 @@
-from machine import Pin, I2C, PWM
+from machine import Pin, I2C, PWM, ADC
 import time
 
 

@@ -1,4 +1,4 @@
-from machine import Pin,PWM
+from machine import Pin,PWM,ADC
 import time
 
 _CAMERA_DBG_ = True
@@ -6,6 +6,7 @@ Red_Button_Pressed = 1
 if_focused = False
 de_bounce_time = 1
 de_bounce_count = 10
+adc_de_bonuce_count = 50
 # Code Start at "#End of Config"
 
 # Config Output Pins <See Pins.xls>
@@ -23,6 +24,8 @@ S1F_FBW_PIN = 22
 S3_PIN = 7
 S3_PIN = 7
 S5_PIN = 6
+ADC_STAGE1_PIN = 27
+ADC_STAGE2_PIN = 28
 # End Config Input Pins
 
 # Config ShutterDelay  sht(1/n) or sht(n)s
@@ -54,7 +57,7 @@ sht1000 = 18
 
 # Inital camera
 def camera_init():
-    global motor,shutter,apture,LED_Y,LED_B,s3,s5,s1t,s1f,S1F_FBW,iso
+    global motor,shutter,apture,LED_Y,LED_B,s3,s5,s1t,s1f,S1F_FBW,ADC0,ADC1,iso
     shutter = PWM(Pin(shutter_pin))
     shutter.freq(20000)
     shutter.duty_u16(0)
@@ -71,6 +74,9 @@ def camera_init():
     s5 = Pin(S5_PIN,Pin.IN,Pin.PULL_UP)
     s1f = Pin(S1F_PIN,Pin.IN)
     s1t = Pin(S1T_PIN,Pin.IN)
+    
+    ADC0 = ADC(Pin(ADC_STAGE1_PIN))  # 通过GPIO27初始化ADC
+    ADC1 = ADC(Pin(ADC_STAGE2_PIN))  # 通过GPIO28初始化ADC
     
     f = open('./dat/iso.txt')
     iso = f.readline()
@@ -111,6 +117,18 @@ def apture_engage():
     
 def apture_disengage():
     apture.duty_u16(0)
+
+def meter():
+    read_voltage0 = 0
+    read_voltage1 = 0
+    for i in range(adc_de_bonuce_count):
+        read_voltage0 += ADC0.read_u16()*3300/65535   # 读取ADC通道0的数值并根据ADC电压计算公式得到GPIO26引脚上的电压
+        read_voltage1 += ADC1.read_u16()*3300/65535   # 读取ADC通道0的数值并根据ADC电压计算公式得到GPIO26引脚上的电压
+        time.sleep_ms(1)
+    read_voltage0 = read_voltage0/adc_de_bonuce_count
+    read_voltage1 = read_voltage1/adc_de_bonuce_count
+    if _CAMERA_DBG_:
+        print("1st stage voltage = {0:.2f}mV \t\t  2nd stage voltage = {1:.2f}mV \t\t".format(read_voltage0, read_voltage1))
 
 def shut(Shutter_Delay, f="1"):
     if _CAMERA_DBG_:
@@ -211,6 +229,7 @@ def test_cam1():
             if _CAMERA_DBG_:
                 print(dbpv)
         if tak == Red_Button_Pressed:
+            meter()
             LED_Y.value(1)
             LED_B.value(1)
             shut(1000);

@@ -2,6 +2,7 @@ from machine import Pin,PWM,ADC,I2C
 import time
 
 # Change Shutter_Delay_Back
+# Change Motor Sequence S5
 
 
 _CAMERA_DBG_ = True
@@ -33,31 +34,32 @@ ADC_STAGE1_PIN = 27
 ADC_STAGE2_PIN = 28
 # End Config Input Pins
 
+
 # Config ShutterDelay  sht(1/n) or sht(n)s
 sht4s = 4000
 sht3s = 3000
 sht2s = 2000
 sht1s = 1000 # EV6
-sht2 = 600 #EV7
-sht3 = 440 #EV7.5
-sht4 = 280 #EV8
-sht6 =210 #EV8.5
-sht8 = 155 #EV9
-sht10 =120 #EV9.5
-sht15 = 97 #EV10
-sht20 = 70 #EV10.5
+sht2 = 500 #EV7
+sht3 = 320 #EV7.5
+sht4 = 240 #EV8
+sht6 =165 #EV8.5
+sht8 = 125 #EV9
+sht10 =99 #EV9.5
+sht15 = 72 #EV10
+sht20 = 60 #EV10.5
 sht30 = 48 #EV11
-sht45 = 40 #EV11.5
-sht60 = 33 #EV12
-sht90 = 29 #EV12.5
+sht45 = 37 #EV11.5
+sht60 = 34 #EV12
+sht90 = 30 #EV12.5
 sht125 = 25 #EV13
 sht180 = 23 #EV13.5
 sht250 = 21 #EV14
 sht360 = 20 #EV14.5
 sht500 = 19 #EV15
-sht1000 = 18 #EV16
+sht1000 = 16 #EV16
 # End Config ShutterDelay
-
+#a=sht1000
 #End of Config
 
 # Inital camera
@@ -197,7 +199,7 @@ def shut(Shutter_Delay, f="1"):
     time.sleep_ms(30)
     shutter.duty_u16(30000)
     #time.sleep_ms(30)
-    time.sleep_ms(3000)
+    time.sleep_ms(3000) #Delete
     motor.value(1)
     if _CAMERA_DBG_:
         print("Motor Start Moving")
@@ -254,8 +256,11 @@ def shut(Shutter_Delay, f="1"):
     motor.value(1)
     if _CAMERA_DBG_:
         print("Motor Working!")
+    
+    time.sleep_ms(2000) #Delete
     while True:
-        if s5.value() == 0:
+        #if s5.value() == 0:
+        if s5.value() == 1:#Delete
             motor.value(0)
             shutter.duty_u16(0)
             break
@@ -321,9 +326,13 @@ if __name__ == "__main__":
     #shut(1000)
     #test_cam1()
     #apture_engage()
+    LED_Y.value(1)
+    LED_B.value(1)
+    shut(a)
     while True:
         #meter()
         #time.sleep_ms(1000)
-        test_cam1()
+        #test_cam1()
         #time.sleep_ms(2000)
         #shut(meter())
+        break

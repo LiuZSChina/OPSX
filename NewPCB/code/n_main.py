@@ -31,25 +31,25 @@ ADC_STAGE2_PIN = 28
 sht4s = 4000
 sht3s = 3000
 sht2s = 2000
-sht1s = 1000
-sht2 = 600
-#ev75 = 440
-sht4 = 280
-sht6 =210
-sht8 = 155
-sht10 =120
-sht15 = 97
-sht20 = 70
-sht30 = 48
-#ev115 = 40
-sht60 = 33
-#ev125 = 29
-sht125 = 25
-#ev135 = 23
-sht250 = 21
-#ev145 = 20
-sht500 = 19
-sht1000 = 18
+sht1s = 1000 # EV6
+sht2 = 600 #EV7
+sht3 = 440 #EV7.5	
+sht4 = 280 #EV8
+sht6 =210 #EV8.5
+sht8 = 155 #EV9
+sht10 =120 #EV9.5
+sht15 = 97 #EV10
+sht20 = 70 #EV10.5
+sht30 = 48 #EV11
+sht45 = 40 #EV11.5
+sht60 = 33 #EV12
+sht90 = 29 #EV12.5
+sht125 = 25 #EV13
+sht180 = 23 #EV13.5
+sht250 = 21 #EV14
+sht360 = 20 #EV14.5
+sht500 = 19 #EV15
+sht1000 = 18 #EV16
 # End Config ShutterDelay
 
 #End of Config
@@ -129,6 +129,49 @@ def meter():
     if _CAMERA_DBG_:
         print("1st stage voltage = {0:.2f}mV \t\t  2nd stage voltage = {1:.2f}mV \t\t".format(read_voltage0, read_voltage1))
     
+    if read_voltage1 <=2700: #Stage2 Working
+        if read_voltage1 >=1875:
+            return sht360
+        if read_voltage1 >=1175:
+            return sht250
+        if read_voltage1 >=788:
+            return sht180
+        if read_voltage1 >=543:
+            return sht125
+        if read_voltage1 >=382:
+            return sht90
+        if read_voltage1 >=273:
+            return sht60
+        if read_voltage1 >=210:
+            return sht45
+        if read_voltage1 >=145:
+            return sht30
+        if read_voltage1 >=109:
+            return sht20
+        if read_voltage1 >=84:
+            return sht15
+        if read_voltage1 >=66:
+            return sht10
+        if read_voltage1 >=53:
+            return sht8
+        if read_voltage1 >=44.5:
+            return sht6
+        if read_voltage1 >=38.5:
+            return sht4
+        if read_voltage1 >=34:
+            return sht3
+        if read_voltage1 >=29.5:
+            return sht2
+        else:
+            return sht1s
+    else: # Stage1
+        if read_voltage0>54.85:
+            return sht1000
+        if read_voltage0>41.5:
+            return sht500
+        else:
+            return sht360
+        
         
     
 
@@ -138,8 +181,10 @@ def shut(Shutter_Delay, f="1"):
     if _CAMERA_DBG_:
         print("Shutter start to close!")
     shutter.duty_u16(65535)
-    time.sleep_ms(18)
-    shutter.duty_u16(10000)
+    time.sleep_ms(30)
+    shutter.duty_u16(30000)
+    #time.sleep_ms(30)
+    time.sleep_ms(3000)
     motor.value(1)
     if _CAMERA_DBG_:
         print("Motor Start Moving")
@@ -188,11 +233,11 @@ def shut(Shutter_Delay, f="1"):
     shutter.duty_u16(65535) # Close Shutter
     if _CAMERA_DBG_:
         print("Shutter Closing!")
-    time.sleep_ms(20)
-    shutter.duty_u16(10000) # Keep Shutter Closed
+    time.sleep_ms(30)
+    shutter.duty_u16(30000) # Keep Shutter Closed
     if _CAMERA_DBG_:
         print("Shutter Closd. Exposure Finished")
-    
+    time.sleep_ms(18)
     motor.value(1)
     if _CAMERA_DBG_:
         print("Motor Working!")
@@ -220,6 +265,7 @@ def test_cam1():
         tak = dbpv[1]
         if foc == Red_Button_Pressed and if_focused == False:
             #S1F_FBW.value(1);
+            St = meter()
             if_focused = True
             print("Focusing!")
             if _CAMERA_DBG_:
@@ -231,10 +277,11 @@ def test_cam1():
             if _CAMERA_DBG_:
                 print(dbpv)
         if tak == Red_Button_Pressed:
-            meter()
+            #meter()
             LED_Y.value(1)
             LED_B.value(1)
-            shut(1000);
+            print("EXP Time:",str(St))
+            shut(St);
             print("Taken!")
             led_iso()
             
@@ -246,7 +293,10 @@ if __name__ == "__main__":
     camera_init()
     #test_cam()
     #shut(1000)
-    test_cam1()
+    #test_cam1()
     while True:
-        meter()
-        time.sleep_ms(1000)
+        #meter()
+        #time.sleep_ms(1000)
+        test_cam1()
+        #time.sleep_ms(2000)
+        #shut(meter())

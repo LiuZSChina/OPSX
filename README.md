@@ -19,6 +19,8 @@ The structure of the repository:\
 
 4. The [schematic](https://github.com/sunyitong/OPSX/tree/master/schematic) folder holds a PDF file which illustrating the circuit principles.
 
+5. The [NewPCB](https://github.com/LiuZSChina/OPSX/tree/master/NewPCB) contains almost every thing related to sonnar model.\
+与声呐型号有关的所有文件（PCB工程，代码文件）都在[NewPCB文件夹](https://github.com/LiuZSChina/OPSX/tree/master/NewPCB) 内.
 
 ## Table of Contents
 

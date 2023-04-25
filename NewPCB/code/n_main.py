@@ -1,9 +1,13 @@
-from machine import Pin,PWM,ADC
+from machine import Pin,PWM,ADC,I2C
 import time
+
+# Change Shutter_Delay_Back
+
 
 _CAMERA_DBG_ = True
 Red_Button_Pressed = 1
 if_focused = False
+flash_connected = False
 de_bounce_time = 1
 de_bounce_count = 10
 adc_de_bonuce_count = 70
@@ -16,11 +20,13 @@ motor_pin = 5
 LED_Y_PIN = 12
 LED_B_PIN = 13
 S1F_FBW_PIN = 22
+FF_PIN = 18 # Flash Pin High to trigger
 # End Config Output
 
 # Config Input Pins <See Pins.xls>
 S1F_PIN = 2 # Sw 1 Focus
 S1T_PIN = 1 # Sw 1 Take Photo
+S2_PIN = 19 # Flash Check Pin | SCL1
 S3_PIN = 7
 S5_PIN = 6
 ADC_STAGE1_PIN = 27
@@ -33,7 +39,7 @@ sht3s = 3000
 sht2s = 2000
 sht1s = 1000 # EV6
 sht2 = 600 #EV7
-sht3 = 440 #EV7.5	
+sht3 = 440 #EV7.5
 sht4 = 280 #EV8
 sht6 =210 #EV8.5
 sht8 = 155 #EV9
@@ -56,7 +62,12 @@ sht1000 = 18 #EV16
 
 # Inital camera
 def camera_init():
-    global motor,shutter,apture,LED_Y,LED_B,s3,s5,s1t,s1f,S1F_FBW,ADC0,ADC1,iso
+    global plugI2c,plugscan,motor,shutter,apture,LED_Y,LED_B,FF,s2,s3,s5,s1t,s1f,S1F_FBW,ADC0,ADC1,iso
+    plugI2c = I2C(1,scl=Pin(19), sda=Pin(18), freq=400000)
+    tmp = plugI2c.scan()
+    plugscan = bool(tmp) and len(tmp)<=5
+    print(plugI2c.scan())
+    
     shutter = PWM(Pin(shutter_pin))
     shutter.freq(20000)
     shutter.duty_u16(0)
@@ -67,8 +78,12 @@ def camera_init():
     motor = Pin(motor_pin,Pin.OUT, value=0)
     LED_Y = Pin(LED_Y_PIN, Pin.OUT,value = 1)
     LED_B = Pin(LED_B_PIN, Pin.OUT,value = 1)
+    if not plugscan:
+        FF = Pin(FF_PIN, Pin.OUT,value = 0)
     S1F_FBW = Pin(S1F_FBW_PIN, Pin.OUT,value = 0)
     
+    if not plugscan:
+        s2 = Pin(S2_PIN,Pin.IN,Pin.PULL_UP)
     s3 = Pin(S3_PIN,Pin.IN,Pin.PULL_UP)
     s5 = Pin(S5_PIN,Pin.IN,Pin.PULL_UP)
     s1f = Pin(S1F_PIN,Pin.IN)
@@ -112,7 +127,7 @@ def de_bounce_read_pins(pin_list):
     return pin_value
 
 def apture_engage():
-    apture.duty_u16(32700)
+    apture.duty_u16(65535)
     
 def apture_disengage():
     apture.duty_u16(0)
@@ -173,8 +188,6 @@ def meter():
             return sht360
         
         
-    
-
 def shut(Shutter_Delay, f="1"):
     if _CAMERA_DBG_:
         print("Taking Picture")
@@ -204,19 +217,19 @@ def shut(Shutter_Delay, f="1"):
         print("Shutter Start to Open, Exposure Starts")
 
     # Start Exposure
-    if f == '0':
+    if f == '0': #Flash
         if _CAMERA_DBG_:
             print("Flash Mode!")
         gap=int(Shutter_Delay*0.3)
         time.sleep_ms(gap)
-        fl.value(1)
+        FF.value(1)
         time.sleep_ms(gap)
-        fl.value(0)
+        FF.value(0)
         apture_disengage() # Apture goes back
         time.sleep_ms(gap)
-    elif f == '1':
+    elif f == '1': #Normal
         time.sleep_ms(Shutter_Delay)
-    elif f == 'B':
+    elif f == 'B': 
         time.sleep_ms(15)
         while True:
             time.sleep_ms(3)
@@ -260,12 +273,22 @@ def test_cam():
 def test_cam1():
     global if_focused, CAMERA_DBG
     while True:
+        # See if flash is connected
+        if not plugscan:
+            flash_connected = not s2.value()
+        else:
+            flash_connected = False
+        
+        # Get Redbutton Value
         dbpv = de_bounce_read_pins([s1f,s1t])
         foc = dbpv[0]
         tak = dbpv[1]
         if foc == Red_Button_Pressed and if_focused == False:
             #S1F_FBW.value(1);
-            St = meter()
+            if not flash_connected:
+                St = meter()
+            else:
+                St = sht60
             if_focused = True
             print("Focusing!")
             if _CAMERA_DBG_:
@@ -280,8 +303,11 @@ def test_cam1():
             #meter()
             LED_Y.value(1)
             LED_B.value(1)
-            print("EXP Time:",str(St))
-            shut(St);
+            print("EXP Time:",str(St)," Flash:",str(flash_connected))
+            if not flash_connected:
+                shut(St);
+            else:
+                shut(St,'0');
             print("Taken!")
             led_iso()
             
@@ -294,6 +320,7 @@ if __name__ == "__main__":
     #test_cam()
     #shut(1000)
     #test_cam1()
+    #apture_engage()
     while True:
         #meter()
         #time.sleep_ms(1000)

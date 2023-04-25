@@ -1,9 +1,12 @@
-# OPSX
-An open sourced Polaroid SX-70 core board
+# OPSX Sonnar
+An open sourced Polaroid SX-70 core board with sonnar support.Based on the [OPSX project](https://github.com/sunyitong/OPSX).\
+开源的宝丽来sx-70核心板，可以支持带有声呐对焦的设备。基于[OPSX 项目](https://github.com/sunyitong/OPSX)开发。
 
-This is an open sourced Polaroid SX-70 instant camera core board with the Raspberry Pi RP2040 as the MCU. The aim of this project is to provide a fully resource accessible and hobbyist friendly replacement core board. It offers more extensibility and hacking ideas while implementing all the features of the original camera.
+This is an open sourced Polaroid SX-70 instant camera core board with the Raspberry Pi RP2040 as the MCU. The aim of this project is to provide a fully resource accessible and hobbyist friendly replacement core board. It offers more extensibility and hacking ideas while implementing all the features of the original camera.\
+本项目是开源的宝丽来sx-70核心板，该项目使用树莓派rp2040构建而成，本项目的目的是为爱好者提供一个可以完全自主掌控的核心板，在保留原机器各种功能的同时可以发挥自己的创意进行功能拓展。
 
-The structure of the repository:
+The structure of the repository:\
+本项目仓库的结构：
 
 1. The [bom](https://github.com/sunyitong/OPSX/tree/master/bom) folder contains an html-based interactive bill of material. You can use it to find the component types and locations
 

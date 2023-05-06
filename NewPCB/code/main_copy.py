@@ -1,5 +1,5 @@
 from machine import Pin,PWM,ADC,I2C
-import time
+import tsl2561,time
 
 # Change Shutter_Delay_Back
 # Change Motor Sequence S5
@@ -36,35 +36,33 @@ ADC_STAGE2_PIN = 28
 
 
 # Config ShutterDelay  sht(1/n) or sht(n)s
-sht4s = 4000
-sht3s = 3000
-sht2s = 2000
-sht1s = 1000 # EV6
-sht2 = 500 #EV7
-sht3 = 320 #EV7.5
-sht4 = 240 #EV8
-sht6 =165 #EV8.5
-sht8 = 125 #EV9
-sht10 =99 #EV9.5
-sht15 = 72 #EV10
-sht20 = 60 #EV10.5
-sht30 = 48 #EV11
-sht45 = 37 #EV11.5
-sht60 = 34 #EV12
-sht90 = 30 #EV12.5
-sht125 = 25 #EV13
-sht180 = 23 #EV13.5
-sht250 = 21 #EV14
-sht360 = 20 #EV14.5
-sht500 = 19 #EV15
-sht1000 = 16 #EV16
+ev7 = 600
+ev75 = 440
+ev8 = 280
+ev85 =210
+ev9 = 155
+ev95 =120
+ev10 = 97
+ev105 = 70
+ev11 = 48
+ev115 = 40
+ev12 = 33
+ev125 = 29
+ev13 = 25
+ev135 = 23
+ev14 = 21
+ev145 = 20
+ev15 = 19
+ev16 = 18
 # End Config ShutterDelay
 #a=sht1000
 #End of Config
 
 # Inital camera
 def camera_init():
-    global plugI2c,plugscan,motor,shutter,apture,LED_Y,LED_B,FF,s2,s3,s5,s1t,s1f,S1F_FBW,ADC0,ADC1,iso
+    global sensor,plugI2c,plugscan,motor,shutter,apture,LED_Y,LED_B,FF,s2,s3,s5,s1t,s1f,S1F_FBW,ADC0,ADC1,iso
+    lm_i2c = I2C(0,scl=Pin(21), sda=Pin(20), freq=400000)
+    sensor = tsl2561.TSL2561(lm_i2c,41)
     plugI2c = I2C(1,scl=Pin(19), sda=Pin(18), freq=400000)
     tmp = plugI2c.scan()
     plugscan = bool(tmp) and len(tmp)<=5
@@ -135,62 +133,61 @@ def apture_disengage():
     apture.duty_u16(0)
 
 def meter():
-    read_voltage0 = 0
-    read_voltage1 = 0
-    for i in range(adc_de_bonuce_count):
-        read_voltage0 += ADC0.read_u16()*3000/65535   # 读取ADC通道0的数值并根据ADC电压计算公式得到GPIO26引脚上的电压
-        read_voltage1 += ADC1.read_u16()*3000/65535   # 读取ADC通道0的数值并根据ADC电压计算公式得到GPIO26引脚上的电压
-        time.sleep_ms(1)
-    read_voltage0 = read_voltage0/adc_de_bonuce_count
-    read_voltage1 = read_voltage1/adc_de_bonuce_count
+    sensor.gain(16)
+    try:
+        lux = sensor.read()
+    except ValueError:
+        sensor.gain(1)
+        lux = sensor.read()
+    #print(lux,sensor.gain())
     if _CAMERA_DBG_:
-        print("1st stage voltage = {0:.2f}mV \t\t  2nd stage voltage = {1:.2f}mV \t\t".format(read_voltage0, read_voltage1))
-    
-    if read_voltage1 <=2700: #Stage2 Working
-        if read_voltage1 >=1875:
-            return sht360
-        if read_voltage1 >=1175:
-            return sht250
-        if read_voltage1 >=788:
-            return sht180
-        if read_voltage1 >=543:
-            return sht125
-        if read_voltage1 >=382:
-            return sht90
-        if read_voltage1 >=273:
-            return sht60
-        if read_voltage1 >=210:
-            return sht45
-        if read_voltage1 >=145:
-            return sht30
-        if read_voltage1 >=109:
-            return sht20
-        if read_voltage1 >=84:
-            return sht15
-        if read_voltage1 >=66:
-            return sht10
-        if read_voltage1 >=53:
-            return sht8
-        if read_voltage1 >=44.5:
-            return sht6
-        if read_voltage1 >=38.5:
-            return sht4
-        if read_voltage1 >=34:
-            return sht3
-        if read_voltage1 >=29.5:
-            return sht2
+        print("Lux = {0:.2f} \t\tGain = {1:.2f} \t\t".format(lux, sensor.gain()))
+    lux -= 0.4
+    if iso == '600':
+        if 0.120<lux<=0.125: 
+            return ev75
+        elif 0.125<lux<=0.1385:
+            return ev8
+        elif 0.1385<lux<=0.152:
+            return ev85
+        elif 0.152<lux<=0.185:
+            return ev9
+        elif 0.185<lux<=0.22:
+            return ev95
+        elif 0.22<lux<=0.275:
+            return ev10
+        elif 0.28<lux<=0.345:
+            return ev105
+        elif 0.345<lux<=0.468:
+            return ev11
+        elif 0.468<lux<=0.58:
+            return ev115
+        elif 0.58<lux<=0.802:
+            return ev12
+        elif 0.802<lux<=1.115:
+            return ev125
+        elif 1.115<lux<=1.6:
+            return ev13
+        elif 1.6<lux<=2.35:
+            return ev135
+        elif 2.35<lux<=3.4:
+            return ev14
+        elif 3.4<lux<=4.2:
+            return ev145
+        elif 4.2<lux<=10:#
+            return ev15
+        elif 10<lux:#
+            return ev16
         else:
-            return sht1s
-    else: # Stage1
-        if read_voltage0>54.85:
-            return sht1000
-        if read_voltage0>41.5:
-            return sht500
-        else:
-            return sht360
+            return ev7
         
         
 def shut(Shutter_Delay, f="1"):
+    
+    #file = open('sht_cal.txt','a')
+    #file.write("{0:.2f}\n".format(Shutter_Delay))
+    #file.close()
+    
     if _CAMERA_DBG_:
         print("Taking Picture")
     if _CAMERA_DBG_:
@@ -222,27 +219,28 @@ def shut(Shutter_Delay, f="1"):
     if f == '0': #Flash
         if _CAMERA_DBG_:
             print("Flash Mode!")
+        FF.value(1)
         gap=int(Shutter_Delay*0.3)
         time.sleep_ms(gap)
-        FF.value(1)
         time.sleep_ms(gap)
         FF.value(0)
         apture_disengage() # Apture goes back
         time.sleep_ms(gap)
-    elif f == '1': #Normal
+    if f == '1': #Normal
         time.sleep_ms(Shutter_Delay)
-    elif f == 'B': 
+    if f == 'B': 
         time.sleep_ms(15)
         while True:
             time.sleep_ms(3)
             if btn.value() == 1:
                 break
-    elif f == 'T':
+    if f == 'T':
         time.sleep(100)
         while True:
             time.sleep(3)
             if btn.value() == 0:
                 break
+    
     # End Exposure
     
     shutter.duty_u16(65535) # Close Shutter
@@ -264,6 +262,7 @@ def shut(Shutter_Delay, f="1"):
             motor.value(0)
             shutter.duty_u16(0)
             break
+    #time.sleep_ms(3000) #Delete
         
 
 def test_cam():
@@ -292,14 +291,12 @@ def test_cam1():
             S1F_FBW.value(1);
             if not flash_connected:
                 St = meter()
-                if St >= sht1s:
-                    LED_Y.value(1)
+                if St >= ev7:
                     LED_B.value(0)
                 else:
-                    LED_Y.value(0)
                     LED_B.value(1)
             else:
-                St = sht60
+                St = ev11
             if_focused = True
             print("Focusing!")
             if _CAMERA_DBG_:
@@ -316,13 +313,12 @@ def test_cam1():
             LED_B.value(1)
             print("EXP Time:",str(St)," Flash:",str(flash_connected))
             if not flash_connected:
-                shut(St);
+                shut(St,'1');
             else:
                 shut(St,'0');
             print("Taken!")
             #led_iso()
             LED_Y.value(0)
-            LED_B.value(0)
             
             if _CAMERA_DBG_:
                 print(dbpv)

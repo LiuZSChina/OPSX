@@ -1,5 +1,5 @@
 from machine import Pin,PWM,ADC,I2C
-import tsl2561,time
+import tsl2561,time,ssd1306,pcf8575
 
 # Change Shutter_Delay_Back
 # Change Motor Sequence S5
@@ -9,9 +9,16 @@ _CAMERA_DBG_ = True
 Red_Button_Pressed = 1
 if_focused = False
 flash_connected = False
+
 de_bounce_time = 1
 de_bounce_count = 10
 adc_de_bonuce_count = 70
+
+display_addr = 60
+have_disp = False
+encoder_addr = 32
+have_enc = False
+enc_pins = [0,1,2,3]
 # Code Start at "#End of Config"
 
 # Config Output Pins <See Pins.xls>
@@ -34,6 +41,23 @@ ADC_STAGE1_PIN = 27
 ADC_STAGE2_PIN = 28
 # End Config Input Pins
 
+# Define Encoder Code
+EC_ZERO = '1111'
+EC_ONE = '0111'
+EC_TWO = '1101'
+EC_THREE = '0101'
+EC_FOUR = '1110'
+EC_FIVE = '0110'
+EC_SIX = '1100'
+EC_SEVEN = '0100'
+EC_EIGHT = '1011'
+EC_NINE = '0011'
+EC_A = '1001'
+EC_B = '0001'
+EC_C = '1010'
+EC_D = '0010'
+EC_E = '1000'
+EC_F = '0000'
 
 # Config ShutterDelay  sht(1/n) or sht(n)s
 ev7 = 600
@@ -58,16 +82,131 @@ ev16 = 18
 #a=sht1000
 #End of Config
 
+def read_enc():
+    result = ""
+    for i in enc_pins:
+        result += str(pcf.pin(i))
+    return result
+
+def plug_encoder():
+    ec = read_enc()
+    #print(ec)
+    if ec == EC_ZERO:
+        display.text('AUTO', 10, 2, 0)
+        return 'A'
+    elif ec == EC_ONE:
+        display.text('B', 23, 2, 0)
+        return 'B'
+    elif ec == EC_TWO:
+        display.text('T', 23, 2, 0)
+        return 'T'
+    elif ec == EC_THREE:
+        display.text('1/2', 15, 2, 0)
+        return ev7
+    elif ec == EC_FOUR:
+        display.text('1/4', 15, 2, 0)
+        return ev8
+    elif ec == EC_FIVE:
+        display.text('1/6', 15, 2, 0)
+        return ev85
+    elif ec == EC_SIX:
+        display.text('1/8', 15, 2, 0)
+        return ev9
+    elif ec == EC_SEVEN:
+        display.text('1/10', 10, 2, 0)
+        return ev95
+    elif ec == EC_EIGHT:
+        display.text('1/15', 10, 2, 0)
+        return ev10
+    elif ec == EC_NINE:
+        display.text('1/20', 10, 2, 0)
+        return ev105
+    elif ec == EC_A:
+        display.text('1/30', 10, 2, 0)
+        return ev11
+    elif ec == EC_B:
+        display.text('1/60', 10, 2, 0)
+        return ev12
+    elif ec == EC_C:
+        display.text('1/125', 5, 2, 0)
+        return ev13
+    elif ec == EC_D:
+        display.text('1/250', 5, 2, 0)
+        return ev14
+    elif ec == EC_E:
+        display.text('1/500', 5, 2, 0)
+        return ev15
+    elif ec == EC_F:
+        display.text('1/1000', 1, 2, 0)
+        return ev16
+    
+def showFrame():
+    display.fill(0)
+    display.fill_rect(0, 0, 128, 11, 1)
+    display.vline(51, 0, 11, 0)
+    display.vline(82, 0, 11, 0)
+    
+def meter():
+    sensor.gain(16)
+    try:
+        lux = sensor.read()
+    except ValueError:
+        sensor.gain(1)
+        lux = sensor.read()
+    #print(lux,sensor.gain())
+    if _CAMERA_DBG_:
+        print("Lux = {0:.2f} \t\tGain = {1:.2f} \t\t".format(lux, sensor.gain()))
+    lux -= 0.4
+    if iso == '600':
+        if 0.120<lux<=0.125: 
+            return ev75,lux
+        elif 0.125<lux<=0.1385:
+            return ev8,lux
+        elif 0.1385<lux<=0.152:
+            return ev85,lux
+        elif 0.152<lux<=0.185:
+            return ev9,lux
+        elif 0.185<lux<=0.22:
+            return ev95,lux
+        elif 0.22<lux<=0.275:
+            return ev10,lux
+        elif 0.28<lux<=0.345:
+            return ev105,lux
+        elif 0.345<lux<=0.468:
+            return ev11,lux
+        elif 0.468<lux<=0.58:
+            return ev115,lux
+        elif 0.58<lux<=0.802:
+            return ev12,lux
+        elif 0.802<lux<=1.115:
+            return ev125,lux
+        elif 1.115<lux<=1.6:
+            return ev13,lux
+        elif 1.6<lux<=2.35:
+            return ev135,lux
+        elif 2.35<lux<=3.4:
+            return ev14,lux
+        elif 3.4<lux<=4.2:
+            return ev145,lux
+        elif 4.2<lux<=10:#
+            return ev15,lux
+        elif 10<lux:#
+            return ev16,lux
+        else:
+            return ev7,lux
+
 # Inital camera
 def camera_init():
-    global sensor,plugI2c,plugscan,motor,shutter,apture,LED_Y,LED_B,FF,s2,s3,s5,s1t,s1f,S1F_FBW,ADC0,ADC1,iso
+    global sensor,plugI2c,plugscan,pcf,display,have_disp,have_enc,motor,shutter,apture,LED_Y,LED_B,FF,s2,s3,s5,s1t,s1f,S1F_FBW,ADC0,ADC1,iso
     lm_i2c = I2C(0,scl=Pin(21), sda=Pin(20), freq=400000)
     sensor = tsl2561.TSL2561(lm_i2c,41)
     plugI2c = I2C(1,scl=Pin(19), sda=Pin(18), freq=400000)
-    tmp = plugI2c.scan()
-    plugscan = bool(tmp) and len(tmp)<=5
+    
+    plug_i2c_add = plugI2c.scan()
+    plugscan = bool(plug_i2c_add) and len(plug_i2c_add)<=5
     print(plugI2c.scan())
     
+        
     shutter = PWM(Pin(shutter_pin))
     shutter.freq(20000)
     shutter.duty_u16(0)
@@ -100,8 +239,52 @@ def camera_init():
         print("ISO at %s!"%iso)
     if iso == '600':
         LED_Y.value(0)
+        #display.text('600', 55, 2, 0)
     else:
         LED_B.value(0)
+        #display.text('70', 60, 2, 0)
+    
+    if plugscan and encoder_addr in plug_i2c_add:
+        pcf = pcf8575.PCF8575(plugI2c, encoder_addr)
+        print("have plug")
+        have_enc = True
+        
+    if plugscan and display_addr in plug_i2c_add:
+        
+        display = ssd1306.SSD1306_I2C(128, 32, plugI2c,addr=display_addr) # 设置宽度，高度和I2C通信
+        have_disp = True
+        display.contrast(0)
+        print("have disp")
+        showFrame()
+        display.text('OFF', 94, 2, 0)
+        if iso == '600':
+            display.text('600', 55, 2, 0)
+        else:
+            display.text('70', 60, 2, 0)
+        
+        if have_enc:
+            enc = plug_encoder()
+            if True or enc == 'A':
+                shut_speed,raw = meter()                 
+                display.text(str(shut_speed)+' ms', 8, 23)
+                if len(str(raw))>7:
+                    raw = str(raw)[0:7]
+                display.text(str(raw), 64, 23)
+            elif enc == 'B':
+                func = 'B'
+            elif enc == 'T':
+                func = 'T'
+        else:
+            if not have_enc:
+                display.text('Auto', 10, 2, 0)
+            shut_speed,raw = meter()                 
+            display.text(str(shut_speed)+' ms', 8, 23)
+            if len(str(raw))>7:
+                raw = str(raw)[0:7]
+            display.text(str(raw), 64, 23)
+        display.show()
+        
+    
 
 def close_led():
     LED_Y.value(1)
@@ -131,55 +314,6 @@ def apture_engage():
     
 def apture_disengage():
     apture.duty_u16(0)
-
-def meter():
-    sensor.gain(16)
-    try:
-        lux = sensor.read()
-    except ValueError:
-        sensor.gain(1)
-        lux = sensor.read()
-    #print(lux,sensor.gain())
-    if _CAMERA_DBG_:
-        print("Lux = {0:.2f} \t\tGain = {1:.2f} \t\t".format(lux, sensor.gain()))
-    lux -= 0.4
-    if iso == '600':
-        if 0.120<lux<=0.125: 
-            return ev75
-        elif 0.125<lux<=0.1385:
-            return ev8
-        elif 0.1385<lux<=0.152:
-            return ev85
-        elif 0.152<lux<=0.185:
-            return ev9
-        elif 0.185<lux<=0.22:
-            return ev95
-        elif 0.22<lux<=0.275:
-            return ev10
-        elif 0.28<lux<=0.345:
-            return ev105
-        elif 0.345<lux<=0.468:
-            return ev11
-        elif 0.468<lux<=0.58:
-            return ev115
-        elif 0.58<lux<=0.802:
-            return ev12
-        elif 0.802<lux<=1.115:
-            return ev125
-        elif 1.115<lux<=1.6:
-            return ev13
-        elif 1.6<lux<=2.35:
-            return ev135
-        elif 2.35<lux<=3.4:
-            return ev14
-        elif 3.4<lux<=4.2:
-            return ev145
-        elif 4.2<lux<=10:#
-            return ev15
-        elif 10<lux:#
-            return ev16
-        else:
-            return ev7
         
         
 def shut(Shutter_Delay, f="1"):
@@ -243,6 +377,7 @@ def shut(Shutter_Delay, f="1"):
                 break
     # End Exposure
     
+    time.sleep_ms(3000) #Delete
     shutter.duty_u16(65535) # Close Shutter
     if _CAMERA_DBG_:
         print("Shutter Closing!")
@@ -257,8 +392,8 @@ def shut(Shutter_Delay, f="1"):
     
     #time.sleep_ms(2000) #Delete
     while True:
-        if s5.value() == 0:
-        #if s5.value() == 1:#Delete
+        #if s5.value() == 0:
+        if s5.value() == 1:#Delete
             motor.value(0)
             shutter.duty_u16(0)
             break
@@ -273,12 +408,13 @@ def test_cam():
     motor.value(1)
     LED_Y.value(0)
     
-def test_cam1():
+def Cam_Operation():
     global if_focused, CAMERA_DBG
     while True:
         # See if flash is connected
         if not plugscan:
             flash_connected = not s2.value()
+            print(flash_connected)
         else:
             flash_connected = False
         
@@ -288,14 +424,40 @@ def test_cam1():
         tak = dbpv[1]
         if foc == Red_Button_Pressed and if_focused == False:
             #S1F_FBW.value(1);
-            if not flash_connected:
-                St = meter()
+            if have_disp:
+                showFrame()
+                if iso == '600':
+                    display.text('600', 55, 2, 0)
+                else:
+                    display.text('70', 60, 2, 0)
+            if have_enc:        
+                enc = plug_encoder()
+            
+            
+            # Meter Mode Select
+            if flash_connected: #Flash insert
+                St = ev11
+                if have_disp:
+                    display.text('FLASH', 86, 2, 0)
+                    display.text('1/30', 10, 2, 0)
+                    
+            elif (not have_enc) or enc == 'A': # No Selector or Set to AUTO
+                if not have_enc:
+                    display.text('Auto', 10, 2, 0)
+                if have_disp:
+                    display.text('OFF', 94, 2, 0)
+                St,raw = meter()
+                if have_disp:
+                    if len(str(raw))>7:
+                        raw = str(raw)[0:7]
+                    display.text(str(raw), 64, 23)
                 if St >= ev7:
                     LED_B.value(0)
                 else:
                     LED_B.value(1)
-            else:
-                St = ev11
+            if have_disp: 
+                display.text(str(St)+' ms', 8, 23)
+                display.show()
             if_focused = True
             print("Focusing!")
             if _CAMERA_DBG_:
@@ -322,12 +484,13 @@ def test_cam1():
             if _CAMERA_DBG_:
                 print(dbpv)
             #return
+        #time.sleep_ms(1000)
     
 if __name__ == "__main__":
     camera_init()
     #test_cam()
     #shut(1000)
-    test_cam1()
+    Cam_Operation()
     #apture_engage()
     #LED_Y.value(1)
     #LED_B.value(1)

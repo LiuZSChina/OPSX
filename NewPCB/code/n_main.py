@@ -9,6 +9,7 @@ _CAMERA_DBG_ = True
 Red_Button_Pressed = 1
 if_focused = False
 flash_connected = False
+LM_ADDR = 41
 
 de_bounce_time = 1
 de_bounce_count = 10
@@ -28,17 +29,15 @@ motor_pin = 5
 LED_Y_PIN = 12
 LED_B_PIN = 13
 S1F_FBW_PIN = 22
-FF_PIN = 18 # Flash Pin High to trigger
+FF_PIN = 11 # Flash Pin High to trigger
 # End Config Output
 
 # Config Input Pins <See Pins.xls>
 S1F_PIN = 2 # Sw 1 Focus
 S1T_PIN = 1 # Sw 1 Take Photo
-S2_PIN = 19 # Flash Check Pin | SCL1
+S2_PIN = 14 # Flash Check Pin | SCL1
 S3_PIN = 7
 S5_PIN = 6
-ADC_STAGE1_PIN = 27
-ADC_STAGE2_PIN = 28
 # End Config Input Pins
 
 # Define Encoder Code
@@ -217,19 +216,14 @@ def camera_init():
     motor = Pin(motor_pin,Pin.OUT, value=0)
     LED_Y = Pin(LED_Y_PIN, Pin.OUT,value = 1)
     LED_B = Pin(LED_B_PIN, Pin.OUT,value = 1)
-    if not plugscan:
-        FF = Pin(FF_PIN, Pin.OUT,value = 0)
+    FF = Pin(FF_PIN, Pin.OUT,value = 0)
     S1F_FBW = Pin(S1F_FBW_PIN, Pin.OUT,value = 0)
     
-    if not plugscan:
-        s2 = Pin(S2_PIN,Pin.IN,Pin.PULL_UP)
+    s2 = Pin(S2_PIN,Pin.IN,Pin.PULL_UP)
     s3 = Pin(S3_PIN,Pin.IN,Pin.PULL_UP)
     s5 = Pin(S5_PIN,Pin.IN,Pin.PULL_UP)
     s1f = Pin(S1F_PIN,Pin.IN)
     s1t = Pin(S1T_PIN,Pin.IN)
-    
-    ADC0 = ADC(Pin(ADC_STAGE1_PIN))  # 初始化ADC
-    ADC1 = ADC(Pin(ADC_STAGE2_PIN))  # 初始化ADC
     
     f = open('./dat/iso.txt')
     iso = f.readline()
@@ -318,9 +312,9 @@ def apture_disengage():
         
 def shut(Shutter_Delay, f="1"):
     
-    f = open('sht_cal.txt','a')
-    f.write("{0:.2f}\n".format(Shutter_Delay))
-    f.close()
+    #f = open('sht_cal.txt','a')
+    #f.write("{0:.2f}\n".format(Shutter_Delay))
+    #f.close()
     
     
     if _CAMERA_DBG_:
@@ -329,7 +323,11 @@ def shut(Shutter_Delay, f="1"):
         print("Shutter start to close!")
     shutter.duty_u16(65535)
     time.sleep_ms(30)
+    if _CAMERA_DBG_:
+        print("Shutter start to close!")
     shutter.duty_u16(30000)
+    if _CAMERA_DBG_:
+        print("Shutter start to close!")
     time.sleep_ms(30)
     #time.sleep_ms(3000) #Delete
     motor.value(1)
@@ -343,7 +341,9 @@ def shut(Shutter_Delay, f="1"):
             break
         
     if f=='0': #Engage apture
-        apture_engage() 
+        apture_engage()
+        if _CAMERA_DBG_:
+            print("apture_engage")
     time.sleep_ms(18) # Y delay
     
     shutter.duty_u16(0) #open shutter
@@ -355,12 +355,17 @@ def shut(Shutter_Delay, f="1"):
         if _CAMERA_DBG_:
             print("Flash Mode!")
         gap=int(Shutter_Delay*0.3)
+        
+        time.sleep_ms(gap)
+        
+        time.sleep_ms(gap)
+        
+        
+        
         time.sleep_ms(gap)
         FF.value(1)
-        time.sleep_ms(gap)
-        FF.value(0)
         apture_disengage() # Apture goes back
-        time.sleep_ms(gap)
+        FF.value(0)
     elif f == '1': #Normal
         time.sleep_ms(Shutter_Delay)
     elif f == 'B': 
@@ -377,7 +382,7 @@ def shut(Shutter_Delay, f="1"):
                 break
     # End Exposure
     
-    time.sleep_ms(3000) #Delete
+    #time.sleep_ms(3000) #Delete
     shutter.duty_u16(65535) # Close Shutter
     if _CAMERA_DBG_:
         print("Shutter Closing!")
@@ -390,7 +395,7 @@ def shut(Shutter_Delay, f="1"):
     if _CAMERA_DBG_:
         print("Motor Working!")
     
-    #time.sleep_ms(2000) #Delete
+    time.sleep_ms(2000) #Delete
     while True:
         #if s5.value() == 0:
         if s5.value() == 1:#Delete
@@ -412,18 +417,14 @@ def Cam_Operation():
     global if_focused, CAMERA_DBG
     while True:
         # See if flash is connected
-        if not plugscan:
-            flash_connected = not s2.value()
-            print(flash_connected)
-        else:
-            flash_connected = False
+        flash_connected = not s2.value()
         
         # Get Redbutton Value
         dbpv = de_bounce_read_pins([s1f,s1t])
         foc = dbpv[0]
         tak = dbpv[1]
         if foc == Red_Button_Pressed and if_focused == False:
-            #S1F_FBW.value(1);
+            #S1F_FBW.value(1);#delete
             if have_disp:
                 showFrame()
                 if iso == '600':
@@ -442,7 +443,7 @@ def Cam_Operation():
                     display.text('1/30', 10, 2, 0)
                     
             elif (not have_enc) or enc == 'A': # No Selector or Set to AUTO
-                if not have_enc:
+                if not have_enc and have_disp:
                     display.text('Auto', 10, 2, 0)
                 if have_disp:
                     display.text('OFF', 94, 2, 0)
@@ -463,7 +464,7 @@ def Cam_Operation():
             if _CAMERA_DBG_:
                 print(dbpv)
         if foc != Red_Button_Pressed and if_focused == True:
-            #S1F_FBW.value(0);
+            #S1F_FBW.value(0); #delete
             if_focused = False
             print("Stop Focus")
             if _CAMERA_DBG_:

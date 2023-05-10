@@ -232,7 +232,7 @@
     (stroke (width 0.1) (type default)) (layer "Edge.Cuts") (tstamp 0467858a-f6a6-4a5e-90ca-f68aa3496b91))
   (fp_arc (start 47.091599 -6.5278) (mid 45.664323 -7.259524) (end 44.932599 -8.6868)
     (stroke (width 0.1) (type default)) (layer "Edge.Cuts") (tstamp b733cf06-f975-4cab-b1a1-da89b537596b))
-  (fp_circle (center 27.127199 0.7874) (end 27.89971 0.7874)
+  (fp_circle (center 27.127199 0.7874) (end 27.977199 0.7874)
     (stroke (width 0.1) (type default)) (fill none) (layer "Edge.Cuts") (tstamp 2bd7bd74-eed4-4e85-96da-c85640d298e9))
   (fp_line (start -28.078662 7.565774) (end -11.84315 -11.945434)
     (stroke (width 0.254) (type solid)) (layer "User.9") (tstamp f358e6ad-183d-4b9b-bf89-a79a95322810))

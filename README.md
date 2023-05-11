@@ -8,24 +8,17 @@ This is an open sourced Polaroid SX-70 instant camera core board with the Raspbe
 The structure of the repository:\
 本项目仓库的结构：
 
-1. The [bom](https://github.com/sunyitong/OPSX/tree/master/bom) folder contains an html-based interactive bill of material. You can use it to find the component types and locations
+1. The [Original](https://github.com/LiuZSChina/OPSX/tree/master/Original) file contains design for non-sonnar sx-70.See README.md inside this folder for details.\
+[Original](https://github.com/LiuZSChina/OPSX/tree/master/Original)文件夹内是适合没有声呐对焦sx70的核心板设计，设计来自于原本的[OPSX 项目](https://github.com/sunyitong/OPSX)，文件夹内具体项目的作用详见文件夹内的README.md
 
-2. The [code](https://github.com/sunyitong/OPSX/tree/master/code) folder holds the program files necessary to run the core board. The programs are implemented in two separate programming languages:
+2. The [Sonar](https://github.com/LiuZSChina/OPSX/tree/master/Sonnar) file contains design for sonnar sx-70.See README.md inside this folder for details.\
+[Original](https://github.com/LiuZSChina/OPSX/tree/master/Original)文件夹内是新设计的适用于声呐对焦的sx70核心板及附件，文件夹内具体项目的作用详见文件夹内的README.md。
 
-   - [Micropython](https://docs.micropython.org/en/latest/rp2/quickref.html): Similar syntax to python, easy to modify and testing.
-   - [Rust](https://docs.rs/rp2040/latest/rp2040/) (TODO): Ultimate performance with zero runtime loss.
 
-3. The [gerber](https://github.com/sunyitong/OPSX/tree/master/gerber) folder stores the PCB files necessary for factory production.
-
-4. The [schematic](https://github.com/sunyitong/OPSX/tree/master/schematic) folder holds a PDF file which illustrating the circuit principles.
-
-5. The [NewPCB](https://github.com/LiuZSChina/OPSX/tree/master/NewPCB) contains almost every thing related to sonnar model.\
-与声呐型号有关的所有文件（PCB工程，代码文件）都在[NewPCB文件夹](https://github.com/LiuZSChina/OPSX/tree/master/NewPCB) 内.
 
 ## Table of Contents
 
 - [OPSX](#opsx)
-  - [Table of Contents](#table-of-contents)
   - [Hardware](#hardware)
     - [Fabrication](#fabrication)
   - [Software](#software)
@@ -35,18 +28,28 @@ The structure of the repository:\
 
 
 ## Hardware
-TODO
-> Remander: Special tools are required to replace the original core board, please read the [Disassembly Guide](https://instantphotography.files.wordpress.com/2010/12/polaroid-sx-70-camera-repair-book.pdf) first.
+> Remander: You are going to need some “basic” tools:   soldering iron with a fine tip, a prying tool and a tweezer.\
+Aside from the usual tools you are going to need what is called a “Polaroid screwdriver” or “SX-70 screwdriver”, since most of the cameras use a special “square 1mm x 1mm” screws. You could either buy one or fabricate one yourself.\
+please read the [Disassembly Guide](https://instantphotography.files.wordpress.com/2010/12/polaroid-sx-70-camera-repair-book.pdf) or [SX70 camera 125ASA to 600ASA conversion](https://opensx70.com/tutorials/100-600-conversion/) first.\
+提示：首先你需要一些基本的工具：电烙铁、撬棒和镊子。\
+其次大多数sx70相机的螺丝都是非常特殊的1mm x 1mm 宝丽来螺丝，所以你需要使用特殊的螺丝刀才能拆卸，买一把或者自己磨一个都可以。\
+在操作之前推荐先浏览[Disassembly Guide](https://instantphotography.files.wordpress.com/2010/12/polaroid-sx-70-camera-repair-book.pdf) 或者 [SX70 camera 125ASA to 600ASA conversion](https://opensx70.com/tutorials/100-600-conversion/).
+
 ### Fabrication
-Please select a **dual copper layer PCB** with a thickness of **0.8 mm** or less for fabrication.
+Please select a **dual copper layer PCB** with a thickness of **0.8 mm** or less for fabrication.\
+制造时请选择 FR-4基板，双层板，厚度0.8mm或者更小（会贵）。
+
 ## Software
 TODO
-### Uploading
-TODO
-## Contributor
-[@Yitong Sun](https://github.com/sunyitong) - a PhD candidate in the Computer Science Research Centre at the Royal College of Art.
 
-[RCA website](https://www.rca.ac.uk/research-innovation/research-degrees/research-students/yitong-sun/) - [E-mail](yitong.sun@network.rca.ac.uk)
+### Uploading
+Solder U+ U- GND VCC to a standard usb cable to connect to your computer. Then you can treat it as normal raspberry pico device. See [here](https://www.raspberrypi.com/documentation/microcontrollers/rp2040.html#raspberry-pi-pico) for more information about uploading.\
+把板子上的U+ U- GND VCC焊到usb线上，连接电脑后可以当作树莓派Pico开发板进行操作，具体上传的方法在[这里](https://www.raspberrypi.com/documentation/microcontrollers/rp2040.html#raspberry-pi-pico)。
+
+## Contributor
+[@Yitong Sun](https://github.com/sunyitong) - a PhD candidate in the Computer Science Research Centre at the Royal College of Art.[RCA website](https://www.rca.ac.uk/research-innovation/research-degrees/research-students/yitong-sun/) - [E-mail](yitong.sun@network.rca.ac.uk)
+
+[@LiuZS](https://github.com/LiuZSChina) - ？
 ## License
 Any distribution or modification based on this project should be clearly attributed to the source.
-[GPL 3.0](LICENSE) © Yitong Sun
+[GPL 3.0](LICENSE)

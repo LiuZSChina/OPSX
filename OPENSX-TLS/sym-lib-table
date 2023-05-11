@@ -1,4 +1,0 @@
-(sym_lib_table
-  (version 0)
-  (lib (name "openSX70_MEROEC_V7-9C_20200625-TCS3200-eagle-import")(type "KiCad")(uri "${KIPRJMOD}/openSX70_MEROEC_V7-9C_20200625-TCS3200-eagle-import.kicad_sym")(options "")(descr ""))
-)

@@ -77,6 +77,9 @@ ev14 = 21
 ev145 = 20
 ev15 = 19
 ev16 = 18
+
+ShutterSpeedHuman = {ev7:'1/2', ev75:'1/3', ev8:'1/4', ev85:'1/6', ev9:'1/8', ev95:'1/10', ev10:'1/15', ev105:'1/20', ev11:'1/30', ev115:'1/45', ev12:'1/60',
+                     ev125:'1/90', ev13:'1/125', ev135:'1/180', ev14:'1/250', ev145:'1/360', ev15:'1/500', ev16:'1/1000'}
 # End Config ShutterDelay
 #a=sht1000
 #End of Config
@@ -260,7 +263,7 @@ def camera_init():
             enc = plug_encoder()
             if True or enc == 'A':
                 shut_speed,raw = meter()                 
-                display.text(str(shut_speed)+' ms', 8, 23)
+                display.text(str(ShutterSpeedHuman[shut_speed])+'s', 8, 23)
                 if len(str(raw))>7:
                     raw = str(raw)[0:7]
                 display.text(str(raw), 64, 23)
@@ -272,7 +275,7 @@ def camera_init():
             if not have_enc:
                 display.text('Auto', 10, 2, 0)
             shut_speed,raw = meter()                 
-            display.text(str(shut_speed)+' ms', 8, 23)
+            display.text(str(ShutterSpeedHuman[shut_speed])+'s', 8, 23)
             if len(str(raw))>7:
                 raw = str(raw)[0:7]
             display.text(str(raw), 64, 23)
@@ -316,23 +319,25 @@ def shut(Shutter_Delay, f="1"):
     #f.write("{0:.2f}\n".format(Shutter_Delay))
     #f.close()
     
-    
     if _CAMERA_DBG_:
         print("Taking Picture")
-    if _CAMERA_DBG_:
         print("Shutter start to close!")
+    # Shutter Close
     shutter.duty_u16(65535)
     time.sleep_ms(30)
-    if _CAMERA_DBG_:
-        print("Shutter start to close!")
     shutter.duty_u16(30000)
     if _CAMERA_DBG_:
-        print("Shutter start to close!")
-    time.sleep_ms(30)
+        print("Shutter closed!")
+
+    time.sleep_ms(30) # wait for shutter to fully close
     #time.sleep_ms(3000) #Delete
+
+    # Motor starts moving
     motor.value(1)
     if _CAMERA_DBG_:
         print("Motor Start Moving")
+
+    # Move until mirror reach correct position
     while True:
         if s3.value() == 1:
             motor.value(0)
@@ -344,6 +349,7 @@ def shut(Shutter_Delay, f="1"):
         apture_engage()
         if _CAMERA_DBG_:
             print("apture_engage")
+    
     time.sleep_ms(18) # Y delay
     
     shutter.duty_u16(0) #open shutter
@@ -354,55 +360,99 @@ def shut(Shutter_Delay, f="1"):
     if f == '0': #Flash
         if _CAMERA_DBG_:
             print("Flash Mode!")
-        gap=int(Shutter_Delay*0.3)
-        
-        time.sleep_ms(gap)
-        
-        time.sleep_ms(gap)
-        
-        
-        
-        time.sleep_ms(gap)
+        gap = int(Shutter_Delay- 47)
+        if gap < 0:
+            gap = 0
+        time.sleep_ms(47)
         FF.value(1)
         apture_disengage() # Apture goes back
         FF.value(0)
+        time.sleep_ms(gap)
+    
     elif f == '1': #Normal
+        if _CAMERA_DBG_:
+            print("Normal Mode!")
         time.sleep_ms(Shutter_Delay)
-    elif f == 'B': 
+    
+    elif f == 'B': #B mode
+        if _CAMERA_DBG_:
+            print("B Mode!")
         time.sleep_ms(15)
         while True:
+            dbpv = de_bounce_read_pins([s1f,s1t])
+            foc = dbpv[0]
+            tak = dbpv[1]
             time.sleep_ms(3)
-            if btn.value() == 1:
+            if tak != Red_Button_Pressed:
                 break
-    elif f == 'T':
-        time.sleep(100)
+
+    elif f == 'T': # T mode
+        if _CAMERA_DBG_:
+            print("T Mode!")
+        
+        # Wait until Button Released
         while True:
-            time.sleep(3)
-            if btn.value() == 0:
+            dbpv = de_bounce_read_pins([s1f,s1t])
+            foc = dbpv[0]
+            tak = dbpv[1]
+            if tak != Red_Button_Pressed:
+                break
+        # Wait until Button Pressed Again
+        while True:
+            dbpv = de_bounce_read_pins([s1f,s1t])
+            foc = dbpv[0]
+            tak = dbpv[1]
+            time.sleep_ms(3)
+            if tak == Red_Button_Pressed:
                 break
     # End Exposure
     
     #time.sleep_ms(3000) #Delete
+
+    # Close Shutter
     shutter.duty_u16(65535) # Close Shutter
     if _CAMERA_DBG_:
         print("Shutter Closing!")
-    time.sleep_ms(30)
+    time.sleep_ms(30) # wait until shutter fully closed
     shutter.duty_u16(30000) # Keep Shutter Closed
     if _CAMERA_DBG_:
         print("Shutter Closd. Exposure Finished")
     time.sleep_ms(18)
+
+    #start ejacting film
     motor.value(1)
     if _CAMERA_DBG_:
         print("Motor Working!")
     
     time.sleep_ms(2000) #Delete
+
+    # wait until film fully ejact
     while True:
         #if s5.value() == 0:
         if s5.value() == 1:#Delete
             motor.value(0)
             shutter.duty_u16(0)
             break
-        
+
+
+#Taking Photo, St = Shutter delay
+def Take_Photo(St,Shut_Mode):
+    #meter()
+    LED_Y.value(1)
+    LED_B.value(1)
+    print("EXP Time:",str(St)," Flash:",str(Shut_Mode))
+    """
+    if not flash_connected:
+        shut(St);
+    else:
+        shut(St,'0');
+    """
+    shut(St,Shut_Mode);
+    print("Taken!")
+    #led_iso()
+    LED_Y.value(0)
+    #return
+#time.sleep_ms(1000)
 
 def test_cam():
     time.sleep_ms(3800)
@@ -418,13 +468,14 @@ def Cam_Operation():
     while True:
         # See if flash is connected
         flash_connected = not s2.value()
-        
         # Get Redbutton Value
         dbpv = de_bounce_read_pins([s1f,s1t])
         foc = dbpv[0]
         tak = dbpv[1]
+
+        # If button pressed half way and not focused
         if foc == Red_Button_Pressed and if_focused == False:
-            #S1F_FBW.value(1);#delete
+            #S1F_FBW.value(1);  #delete
             if have_disp:
                 showFrame()
                 if iso == '600':
@@ -434,20 +485,26 @@ def Cam_Operation():
             if have_enc:        
                 enc = plug_encoder()
             
-            
             # Meter Mode Select
-            if flash_connected: #Flash insert
-                St = ev11
+            #Flash inserted
+            if flash_connected: 
+                shut_mode = '0'
+                if (not have_enc) or enc =='A':
+                    St = ev11
                 if have_disp:
                     display.text('FLASH', 86, 2, 0)
                     display.text('1/30', 10, 2, 0)
-                    
-            elif (not have_enc) or enc == 'A': # No Selector or Set to AUTO
+            
+            # No Selector or Set to AUTO
+            elif (not have_enc) or enc == 'A': 
                 if not have_enc and have_disp:
                     display.text('Auto', 10, 2, 0)
                 if have_disp:
                     display.text('OFF', 94, 2, 0)
+                
+                #meter
                 St,raw = meter()
+                shut_mode = '1' # '0'-flash; '1'-normal; 'B'; 'T'
                 if have_disp:
                     if len(str(raw))>7:
                         raw = str(raw)[0:7]
@@ -456,37 +513,35 @@ def Cam_Operation():
                     LED_B.value(0)
                 else:
                     LED_B.value(1)
+            """
+            todo : Select shutter speed
+            """
+
             if have_disp: 
-                display.text(str(St)+' ms', 8, 23)
+                display.text(str(ShutterSpeedHuman[St])+'s', 8, 23)
                 display.show()
             if_focused = True
             print("Focusing!")
             if _CAMERA_DBG_:
                 print(dbpv)
+        
         if foc != Red_Button_Pressed and if_focused == True:
             #S1F_FBW.value(0); #delete
             if_focused = False
             print("Stop Focus")
             if _CAMERA_DBG_:
                 print(dbpv)
+
+        # Button Fully Pressed -> Take Photo
         if tak == Red_Button_Pressed:
-            #meter()
-            LED_Y.value(1)
-            LED_B.value(1)
-            print("EXP Time:",str(St)," Flash:",str(flash_connected))
-            if not flash_connected:
-                shut(St);
-            else:
-                shut(St,'0');
-            print("Taken!")
-            #led_iso()
-            LED_Y.value(0)
-            
+            Take_Photo(St, shut_mode) #delete
+            #Take_Photo(ev7, shut_mode) #delete
+            #Take_Photo(St, 'B') #delete
+            #Take_Photo(St, 'T') #delete
             if _CAMERA_DBG_:
                 print(dbpv)
-            #return
-        #time.sleep_ms(1000)
     
+
 if __name__ == "__main__":
     camera_init()
     #test_cam()

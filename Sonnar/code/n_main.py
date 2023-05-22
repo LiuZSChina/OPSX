@@ -19,7 +19,7 @@ display_addr = 60
 have_disp = False
 encoder_addr = 32
 have_enc = False
-enc_pins = [0,1,2,3]
+enc_pins = [4,5,6,7]
 # Code Start at "#End of Config"
 
 # Config Output Pins <See Pins.xls>
@@ -88,10 +88,12 @@ def read_enc():
     result = ""
     for i in enc_pins:
         result += str(pcf.pin(i))
+    print(result,pcf.pin(1))
     return result
 
 def plug_encoder():
     ec = read_enc()
+    #ec = EC_ZERO #delete
     #print(ec)
     if ec == EC_ZERO:
         display.text('AUTO', 10, 2, 0)
@@ -243,6 +245,7 @@ def camera_init():
     
     if plugscan and encoder_addr in plug_i2c_add:
         pcf = pcf8575.PCF8575(plugI2c, encoder_addr)
+        pcf.port = 0x0ff
         print("have plug")
         have_enc = True
         
@@ -468,6 +471,7 @@ def Cam_Operation():
     while True:
         # See if flash is connected
         flash_connected = not s2.value()
+        #print(flash_connected, s2.value())
         # Get Redbutton Value
         dbpv = de_bounce_read_pins([s1f,s1t])
         foc = dbpv[0]
@@ -496,7 +500,7 @@ def Cam_Operation():
                     display.text('1/30', 10, 2, 0)
             
             # No Selector or Set to AUTO
-            elif (not have_enc) or enc == 'A': 
+            elif (not have_enc) or enc == 'A' or True: 
                 if not have_enc and have_disp:
                     display.text('Auto', 10, 2, 0)
                 if have_disp:
@@ -509,10 +513,13 @@ def Cam_Operation():
                     if len(str(raw))>7:
                         raw = str(raw)[0:7]
                     display.text(str(raw), 64, 23)
+                """
                 if St >= ev7:
                     LED_B.value(0)
                 else:
                     LED_B.value(1)
+                """
+                
             """
             todo : Select shutter speed
             """

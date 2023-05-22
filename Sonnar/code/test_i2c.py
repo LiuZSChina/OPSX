@@ -26,7 +26,7 @@ pcf.pin(4, 0)
 pcf.toggle(5)
 
 # set all pins at once with 16-bit int
-pcf.port = 0x0f0
+pcf.port = 0x0ff
 
 # read all pins at once as 16-bit int
 print(pcf.port)

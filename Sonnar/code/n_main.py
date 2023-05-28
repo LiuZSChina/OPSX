@@ -43,18 +43,18 @@ S5_PIN = 6
 # Define Encoder Code
 EC_ZERO = '1111'
 EC_ONE = '0111'
-EC_TWO = '1101'
-EC_THREE = '0101'
-EC_FOUR = '1110'
-EC_FIVE = '0110'
-EC_SIX = '1100'
-EC_SEVEN = '0100'
-EC_EIGHT = '1011'
-EC_NINE = '0011'
-EC_A = '1001'
-EC_B = '0001'
-EC_C = '1010'
-EC_D = '0010'
+EC_TWO = '1011'
+EC_THREE = '0011'
+EC_FOUR = '1101'
+EC_FIVE = '0101'
+EC_SIX = '1001'
+EC_SEVEN = '0001'
+EC_EIGHT = '1110'
+EC_NINE = '0110'
+EC_A = '1010'
+EC_B = '0010'
+EC_C = '1100'
+EC_D = '0100'
 EC_E = '1000'
 EC_F = '0000'
 
@@ -88,7 +88,7 @@ def read_enc():
     result = ""
     for i in enc_pins:
         result += str(pcf.pin(i))
-    print(result,pcf.pin(1))
+    #print(result,pcf.pin(1))
     return result
 
 def plug_encoder():
@@ -263,6 +263,7 @@ def camera_init():
             display.text('70', 60, 2, 0)
         
         if have_enc:
+            """
             enc = plug_encoder()
             if True or enc == 'A':
                 shut_speed,raw = meter()                 
@@ -274,6 +275,8 @@ def camera_init():
                 func = 'B'
             elif enc == 'T':
                 func = 'T'
+            """
+            pass
         else:
             if not have_enc:
                 display.text('Auto', 10, 2, 0)
@@ -476,7 +479,10 @@ def Cam_Operation():
         dbpv = de_bounce_read_pins([s1f,s1t])
         foc = dbpv[0]
         tak = dbpv[1]
-
+        if have_enc:      
+            display.fill_rect(0, 0, 50, 11, 1)  
+            enc = plug_encoder()
+            display.show()
         # If button pressed half way and not focused
         if foc == Red_Button_Pressed and if_focused == False:
             #S1F_FBW.value(1);  #delete
@@ -486,8 +492,6 @@ def Cam_Operation():
                     display.text('600', 55, 2, 0)
                 else:
                     display.text('70', 60, 2, 0)
-            if have_enc:        
-                enc = plug_encoder()
             
             # Meter Mode Select
             #Flash inserted
@@ -495,12 +499,16 @@ def Cam_Operation():
                 shut_mode = '0'
                 if (not have_enc) or enc =='A':
                     St = ev11
+                """
+                todo: Speed Over Dirve
+                """
                 if have_disp:
                     display.text('FLASH', 86, 2, 0)
                     display.text('1/30', 10, 2, 0)
             
+            # No Flash
             # No Selector or Set to AUTO
-            elif (not have_enc) or enc == 'A' or True: 
+            elif (not have_enc) or enc == 'A': 
                 if not have_enc and have_disp:
                     display.text('Auto', 10, 2, 0)
                 if have_disp:
@@ -508,24 +516,61 @@ def Cam_Operation():
                 
                 #meter
                 St,raw = meter()
-                shut_mode = '1' # '0'-flash; '1'-normal; 'B'; 'T'
+                shut_mode = '1' # '0'-flash; '1'-normal; 'B'- B; 'T' - T
                 if have_disp:
                     if len(str(raw))>7:
                         raw = str(raw)[0:7]
                     display.text(str(raw), 64, 23)
+                    display.text(str(ShutterSpeedHuman[St])+'s', 8, 23)
                 """
                 if St >= ev7:
                     LED_B.value(0)
                 else:
                     LED_B.value(1)
                 """
-                
+            
+            # Select B Mode
+            elif enc == 'B':
+                shut_mode = 'B'
+                St = ev11
+                if not have_enc and have_disp:
+                        #display.text('B', 10, 2, 0)
+                        pass
+                if have_disp:
+                    display.text('OFF', 94, 2, 0)
+                    display.fill_rect(0,12,128,52,0)
+                    #display.text('Shutter open until button release', 8, 23)
+                    display.text('Open When Press', 8, 23)
+            # Select T Mode
+            elif enc == 'T':
+                shut_mode = 'T'
+                St = ev11
+                if not have_enc and have_disp:
+                        #display.text('B', 10, 2, 0)
+                        pass
+                if have_disp:
+                    display.text('OFF', 94, 2, 0)
+                    display.fill_rect(0,12,128,52,0)
+                    #display.text('Shutter open until button release', 8, 23)
+                    display.text('Press to Stop', 8, 23)
+            
+            else:
+                St = plug_encoder()
+                _,raw = meter()
+                shut_mode = '1' # '0'-flash; '1'-normal; 'B'; 'T'
+                if have_disp:
+                    display.text('OFF', 94, 2, 0)
+                    display.fill_rect(0,12,128,52,0)
+                    if len(str(raw))>7:
+                        raw = str(raw)[0:7]
+                    display.text(str(raw), 64, 23)
+                    display.text(str(ShutterSpeedHuman[St])+'s', 8, 23)
             """
             todo : Select shutter speed
             """
 
             if have_disp: 
-                display.text(str(ShutterSpeedHuman[St])+'s', 8, 23)
+                #display.text(str(ShutterSpeedHuman[St])+'s', 8, 23)
                 display.show()
             if_focused = True
             print("Focusing!")

@@ -1,7 +1,6 @@
 """
-裸板调试版本，对焦以及s5已经注释掉方便调试
+正常调试版本，适合组装后使用
 """
-
 from machine import Pin,PWM,ADC,I2C
 import tsl2561,time,ssd1306,pcf8575
 
@@ -434,12 +433,12 @@ def shut(Shutter_Delay, f="1"):
     if _CAMERA_DBG_:
         print("Motor Working!")
     
-    time.sleep_ms(2000) #Delete
+    #time.sleep_ms(2000) #Delete
 
     # wait until film fully ejact
     while True:
-        #if s5.value() == 0:
-        if s5.value() == 1:#Delete
+        if s5.value() == 0:
+        #if s5.value() == 1:#Delete
             motor.value(0)
             shutter.duty_u16(0)
             break
@@ -489,7 +488,7 @@ def Cam_Operation():
             display.show()
         # If button pressed half way and not focused
         if foc == Red_Button_Pressed and if_focused == False:
-            #S1F_FBW.value(1);  #delete
+            S1F_FBW.value(1);  #delete
             if have_disp:
                 showFrame()
                 if iso == '600':
@@ -503,72 +502,93 @@ def Cam_Operation():
                 shut_mode = '0'
                 if (not have_enc) or enc =='A':
                     St = ev11
-                """
-                todo: Speed Over Dirve
-                """
+                    display.text(str(ShutterSpeedHuman[St])+'s', 8, 23)
+                    _,raw = meter()
+                    if len(str(raw))>7:
+                        raw = str(raw)[0:7]
+                    display.text(str(raw), 64, 23)
+                    display.text(str(ShutterSpeedHuman[St])+'s', 8, 23)
+                elif enc != 'B' and enc != 'T':
+                    St = plug_encoder()
+                    if St < ev11:
+                        St = ev11
+                    _,raw = meter()
+                    if len(str(raw))>7:
+                        raw = str(raw)[0:7]
+                    display.text(str(raw), 64, 23)
+                    display.text(str(ShutterSpeedHuman[St])+'s', 8, 23)
+                else:
+                    if have_disp:
+                        display.text('---', 94, 2, 0)
+                        display.fill_rect(0,12,128,52,0)
+                        #display.text('Shutter open until button release', 8, 23)
+                        display.text('Not Support', 8, 23)
+                    continue
+
                 if have_disp:
                     display.text('FLASH', 86, 2, 0)
                     display.text('1/30', 10, 2, 0)
             
             # No Flash
-            # No Selector or Set to AUTO
-            elif (not have_enc) or enc == 'A': 
-                if not have_enc and have_disp:
-                    display.text('Auto', 10, 2, 0)
-                if have_disp:
-                    display.text('OFF', 94, 2, 0)
-                
-                #meter
-                St,raw = meter()
-                shut_mode = '1' # '0'-flash; '1'-normal; 'B'- B; 'T' - T
-                if have_disp:
-                    if len(str(raw))>7:
-                        raw = str(raw)[0:7]
-                    display.text(str(raw), 64, 23)
-                    display.text(str(ShutterSpeedHuman[St])+'s', 8, 23)
-                """
-                if St >= ev7:
-                    LED_B.value(0)
-                else:
-                    LED_B.value(1)
-                """
-            
-            # Select B Mode
-            elif enc == 'B':
-                shut_mode = 'B'
-                St = ev11
-                if not have_enc and have_disp:
-                        #display.text('B', 10, 2, 0)
-                        pass
-                if have_disp:
-                    display.text('OFF', 94, 2, 0)
-                    display.fill_rect(0,12,128,52,0)
-                    #display.text('Shutter open until button release', 8, 23)
-                    display.text('Open When Press', 8, 23)
-            # Select T Mode
-            elif enc == 'T':
-                shut_mode = 'T'
-                St = ev11
-                if not have_enc and have_disp:
-                        #display.text('B', 10, 2, 0)
-                        pass
-                if have_disp:
-                    display.text('OFF', 94, 2, 0)
-                    display.fill_rect(0,12,128,52,0)
-                    #display.text('Shutter open until button release', 8, 23)
-                    display.text('Press to Stop', 8, 23)
-            
             else:
-                St = plug_encoder()
-                _,raw = meter()
-                shut_mode = '1' # '0'-flash; '1'-normal; 'B'; 'T'
-                if have_disp:
-                    display.text('OFF', 94, 2, 0)
-                    display.fill_rect(0,12,128,52,0)
-                    if len(str(raw))>7:
-                        raw = str(raw)[0:7]
-                    display.text(str(raw), 64, 23)
-                    display.text(str(ShutterSpeedHuman[St])+'s', 8, 23)
+            # No Selector or Set to AUTO
+                if (not have_enc) or enc == 'A': 
+                    if not have_enc and have_disp:
+                        display.text('Auto', 10, 2, 0)
+                    if have_disp:
+                        display.text('OFF', 94, 2, 0)
+                    
+                    #meter
+                    St,raw = meter()
+                    shut_mode = '1' # '0'-flash; '1'-normal; 'B'- B; 'T' - T
+                    if have_disp:
+                        if len(str(raw))>7:
+                            raw = str(raw)[0:7]
+                        display.text(str(raw), 64, 23)
+                        display.text(str(ShutterSpeedHuman[St])+'s', 8, 23)
+                    """
+                    if St >= ev7:
+                        LED_B.value(0)
+                    else:
+                        LED_B.value(1)
+                    """
+                
+                # Select B Mode
+                elif enc == 'B':
+                    shut_mode = 'B'
+                    St = ev11
+                    if not have_enc and have_disp:
+                            #display.text('B', 10, 2, 0)
+                            pass
+                    if have_disp:
+                        display.text('OFF', 94, 2, 0)
+                        display.fill_rect(0,12,128,52,0)
+                        #display.text('Shutter open until button release', 8, 23)
+                        display.text('Open When Press', 8, 23)
+                # Select T Mode
+                elif enc == 'T':
+                    shut_mode = 'T'
+                    St = ev11
+                    if not have_enc and have_disp:
+                            #display.text('B', 10, 2, 0)
+                            pass
+                    if have_disp:
+                        display.text('OFF', 94, 2, 0)
+                        display.fill_rect(0,12,128,52,0)
+                        #display.text('Shutter open until button release', 8, 23)
+                        display.text('Press to Stop', 8, 23)
+                
+                else:
+                    St = plug_encoder()
+                    _,raw = meter()
+                    shut_mode = '1' # '0'-flash; '1'-normal; 'B'; 'T'
+                    if have_disp:
+                        display.text('OFF', 94, 2, 0)
+                        display.fill_rect(0,12,128,52,0)
+                        if len(str(raw))>7:
+                            raw = str(raw)[0:7]
+                        display.text(str(raw), 64, 23)
+                        display.text(str(ShutterSpeedHuman[St])+'s', 8, 23)
             """
             todo : Select shutter speed
             """
@@ -582,7 +602,7 @@ def Cam_Operation():
                 print(dbpv)
         
         if foc != Red_Button_Pressed and if_focused == True:
-            #S1F_FBW.value(0); #delete
+            S1F_FBW.value(0); #delete
             if_focused = False
             print("Stop Focus")
             if _CAMERA_DBG_:
@@ -590,7 +610,7 @@ def Cam_Operation():
 
         # Button Fully Pressed -> Take Photo
         if tak == Red_Button_Pressed:
-            Take_Photo(St, shut_mode) #delete
+            Take_Photo(St, shut_mode) 
             #Take_Photo(ev7, shut_mode) #delete
             #Take_Photo(St, 'B') #delete
             #Take_Photo(St, 'T') #delete
@@ -614,3 +634,4 @@ if __name__ == "__main__":
         #time.sleep_ms(2000)
         #shut(meter())
         break
+
